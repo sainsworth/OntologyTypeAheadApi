@@ -5,9 +5,9 @@ namespace OntologyTypeAheadApi.Context.Contract
 {
     public interface IDatastoreContext
     {
-        IEnumerable<LookupResponse> All();
-        IEnumerable<LookupResponse> Equals(string query, bool casesensitive = false);
-        IEnumerable<LookupResponse> StartsWith(string query, bool casesensitive = false);
-        IEnumerable<LookupResponse> Contains(string query, bool casesensitive = false);
+        IEnumerable<LookupItem> All();
+        IEnumerable<LookupItem> Equals(string query, bool casesensitive = false);
+        IEnumerable<LookupItem> StartsWith(string query, bool casesensitive = false);
+        IEnumerable<LookupItem> Contains(string query, bool casesensitive = false);
     }
 }

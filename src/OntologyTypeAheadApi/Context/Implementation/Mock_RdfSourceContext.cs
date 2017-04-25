@@ -11,10 +11,10 @@ namespace OntologyTypeAheadApi.Context.Implementation
 {
     public class Mock_RdfSourceContext : IRdfSourceContext
     {
-        public IEnumerable<RdfResponse> All()
+        public IEnumerable<Ontology> All()
         {
-            return new List<RdfResponse>() {
-                new RdfResponse(
+            return new List<Ontology>() {
+                new Ontology(
                     Path.Combine(HttpContext.Current.Request.PhysicalApplicationPath,@"App_Data\Dummy_Ontology.ttl"),
                     RdfSource.File,
                     RdfType.TTL)

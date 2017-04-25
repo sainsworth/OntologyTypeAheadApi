@@ -4,6 +4,7 @@
     {
         Unknown,
         Uri,
-        File
+        File,
+        String
     }
 }

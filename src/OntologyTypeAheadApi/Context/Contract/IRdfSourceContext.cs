@@ -5,6 +5,6 @@ namespace OntologyTypeAheadApi.Context.Contract
 {
     public interface IRdfSourceContext
     {
-        IEnumerable<RdfResponse> All();
+        IEnumerable<Ontology> All();
     }
 }

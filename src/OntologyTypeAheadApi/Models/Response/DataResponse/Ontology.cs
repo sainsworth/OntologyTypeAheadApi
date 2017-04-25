@@ -6,13 +6,13 @@ using OntologyTypeAheadApi.Enums;
 
 namespace OntologyTypeAheadApi.Models.Response.DataResponse
 {
-    public class RdfResponse
+    public class Ontology
     {
         public string Location { get; set; }
         public RdfSource Source { get; set; } = RdfSource.Unknown;
         public RdfType Type { get; set; } = RdfType.Unknown;
 
-        public RdfResponse(string location, RdfSource source, RdfType type = RdfType.Unknown)
+        public Ontology(string location, RdfSource source, RdfType type = RdfType.Unknown)
         {
             Location = location;
             Source = source;

@@ -11,31 +11,31 @@ namespace OntologyTypeAheadApi.Context.Implementation
 {
     public class Mock_DatastoreContext : IDatastoreContext
     {
-        private IEnumerable<LookupResponse> _data;
+        private IEnumerable<LookupItem> _data;
 
         public Mock_DatastoreContext()
         {
             _data = SetupMockData();
         }
 
-        public IEnumerable<LookupResponse> All()
+        public IEnumerable<LookupItem> All()
         {
             return _data;
         }
 
-        public IEnumerable<LookupResponse> Contains(string query, bool casesensitive = false)
+        public IEnumerable<LookupItem> Contains(string query, bool casesensitive = false)
         {
             var mode = _sanitiseStringMode(casesensitive);
             return _data.Where(x => x.Label.Sanitise(mode).Contains(query.Sanitise(mode))).AsEnumerable();
         }
 
-        public IEnumerable<LookupResponse> Equals(string query, bool casesensitive = false)
+        public IEnumerable<LookupItem> Equals(string query, bool casesensitive = false)
         {
             var mode = _sanitiseStringMode(casesensitive);
             return _data.Where(x => x.Label.Sanitise(mode) == query.Sanitise(mode)).AsEnumerable();
         }
 
-        public IEnumerable<LookupResponse> StartsWith(string query, bool casesensitive = false)
+        public IEnumerable<LookupItem> StartsWith(string query, bool casesensitive = false)
         {
             var mode = _sanitiseStringMode(casesensitive);
             return _data.Where(x => x.Label.Sanitise(mode).StartsWith(query.Sanitise(mode))).AsEnumerable();
@@ -46,7 +46,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
             return casesensitive ? StringExtensions.SanitiseStringMode.KeepCase : StringExtensions.SanitiseStringMode.ToUpper;
         }
 
-        private IEnumerable<LookupResponse> SetupMockData()
+        private IEnumerable<LookupItem> SetupMockData()
         {
             var towns = new List<string>() {
                 "Abingdon-on-Thames",
@@ -89,13 +89,13 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 "Aylesbury",
                 "Aylsham"
             };
-            var ret = new List<LookupResponse>();
+            var ret = new List<LookupItem>();
             for(int i = 0; i < towns.Count; i++)
-                ret.Add(new LookupResponse(i.ToString(), towns[i]));
+                ret.Add(new LookupItem(i.ToString(), towns[i]));
             return ret;
         }
 
-        public Mock_DatastoreContext(IEnumerable<LookupResponse> data)
+        public Mock_DatastoreContext(IEnumerable<LookupItem> data)
         {
             _data = data;
         }

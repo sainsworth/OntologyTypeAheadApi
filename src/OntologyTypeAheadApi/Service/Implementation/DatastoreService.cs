@@ -12,6 +12,7 @@ using OntologyTypeAheadApi.Context.Contract;
 using VDS.RDF;
 using VDS.RDF.Parsing;
 using OntologyTypeAheadApi.Enums;
+using OntologyTypeAheadApi.Helpers;
 
 namespace OntologyTypeAheadApi.Service.Implementation
 {
@@ -19,9 +20,9 @@ namespace OntologyTypeAheadApi.Service.Implementation
     {
         private IDatastoreContext _datastoreContext;
         private IRdfSourceContext _rdfSourceContext;
-        public IResponse<IEnumerable<LookupResponse>> GetMatches(string query)
+        public IResponse<IEnumerable<LookupItem>> GetMatches(string query)
         {
-            var resp = new EnumerableResponse<LookupResponse>();
+            var resp = new EnumerableResponse<LookupItem>();
             if (string.IsNullOrWhiteSpace(query))
                 resp.Status = Enums.ResponseStatus.NoResponse;
             else
@@ -55,41 +56,9 @@ namespace OntologyTypeAheadApi.Service.Implementation
             {
                 foreach (var x in _rdfSourceContext.All())
                 {
-                    IGraph g = new Graph();
-                    IRdfReader r = null;
+                    var graph = RdfHelper.GetGraphFromOntology(x);
 
-                    switch (x.Type)
-                    {
-                        case RdfType.TTL:
-                            r = new TurtleParser();
-                            break;
-                    }
-
-                    if (x.Source == RdfSource.Uri)
-                    {
-                        if (r == null)
-                            UriLoader.Load(g, new Uri(x.Location));
-                        else
-                            UriLoader.Load(g, new Uri(x.Location), r);
-                    }
-                    else if (x.Type == RdfType.TTL)
-                    {
-                        r.Load(g, x.Location);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            FileLoader.Load(g, x.Location);
-                        }
-                        catch (Exception e)
-                        {
-                            while (e.InnerException != null) e = e.InnerException;
-                            throw new Exception($"Rdf Source and Type Unknown - {x.Location} - cannot load as TTL from file: {e.Message}");
-                        }
-                    }
-
-                    var y = g.Triples;
+                    var y = graph.Triples;
                     
                 }
                 //resp.Status = ResponseStatus.DataLoaded;
