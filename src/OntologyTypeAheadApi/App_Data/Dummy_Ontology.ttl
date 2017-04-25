@@ -1,0 +1,163 @@
+@prefix : <http://www.stew.test.uk/dummy_ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.stew.test.uk/dummy_ontology> .
+
+<http://www.stew.test.uk/dummy_ontology> rdf:type owl:Ontology .
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://www.stew.test.uk/dummy_ontology/Abingdon-on-Thames
+<http://www.stew.test.uk/dummy_ontology/Abingdon-on-Thames> rdf:type owl:Class ;
+                                                            rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                                                            rdfs:label "Abingdon-on-Thames" .
+         
+                :Accrington rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Accrington" .
+                :Acle rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Acle" .
+                :Acton rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Acton" .
+                :Adlington rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Adlington" .
+                :Alcester rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Alcester" .
+                :Aldeburgh rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Aldeburgh" .
+                :Aldershot rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Aldershot" .
+                :Alford rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Alford" .
+                :Alfreton rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Alfreton" .
+                :Alnwick rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Alnwick" .
+                :Alsager rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Alsager" .
+                :Alston rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> ;
+                rdfs:label "Alston" .
+				
+				:Alton rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+				rdfs:label "Alton" .
+                :Altrincham rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                rdfs:label "Altrincham" .
+                :Amble rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                rdfs:label "Amble" .
+                :Ambleside rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                rdfs:label "Ambleside" .
+                :Amersham rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                rdfs:label "Amersham" .
+                :Amesbury rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                rdfs:label "Amesbury" .
+                :Ampthill rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                rdfs:label "Ampthill" .
+			    :Andover rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                rdfs:label "Andover" .
+                :Appleby-in-Westmorland rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                rdfs:label "Appleby-in-Westmorland" .
+                :Arlesey rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                rdfs:label "Arlesey" .
+                :Arundel rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                rdfs:label "Arundel" .
+			    
+				
+				
+				:Ashbourne rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Starts_with_Ash> ;
+                rdfs:label "Ashbourne" .
+                :Ashburton rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Starts_with_Ash> ;
+                rdfs:label "Ashburton" .
+                :Ashby_Woulds rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Starts_with_Ash> ;
+                rdfs:label "Ashby Woulds" .
+                :Ashby-de-la-Zouch rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Starts_with_Ash> ;
+                rdfs:label "Ashby-de-la-Zouch" .
+                :Ashford rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Starts_with_Ash> ;
+                rdfs:label "Ashford" .
+
+				:Ashington rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> ;
+				rdfs:label "Ashington" .
+                :Ashton-under-Lyne rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> ;
+                rdfs:label "Ashton-under-Lyne" .
+                :Askern rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> ;
+                rdfs:label "Askern" .
+                :Aspatria rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> ;
+                rdfs:label "Aspatria" .
+                :Atherstone rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> ;
+                rdfs:label "Atherstone" .
+                :Attleborough rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> ;
+                rdfs:label "Attleborough" .
+                :Axbridge rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> ;
+                rdfs:label "Axbridge" .
+                :Axminster rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> ;
+                rdfs:label "Axminster" .
+                :Aylesbury rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> ;
+                rdfs:label "Aylesbury" .
+                :Aylsham rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> ;
+                rdfs:label "Aylsham" .
+				
+				
+				
+				
+###  http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston
+<http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> rdf:type owl:Class ;
+                                                            rdfs:label "Abingdon to Alston" .
+
+
+###  http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford
+<http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> rdf:type owl:Class ;
+                                                            rdfs:label "Alton to Ashford" .
+
+
+###  http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham
+<http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> rdf:type owl:Class ;
+                                                           rdfs:label "Ashby to Aylesham" .
+														   
+###  http://www.stew.test.uk/dummy_ontology/Starts_with_Ash
+<http://www.stew.test.uk/dummy_ontology/Starts_with_Ash> rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> ;
+                                                           rdfs:label "Starts with Ash" .
+
+
+###  Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi
