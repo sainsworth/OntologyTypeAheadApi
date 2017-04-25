@@ -23,14 +23,14 @@ namespace OntologyTypeAheadApi.Tests.Context
         public static IDatastoreContext context = new Mock_DatastoreContext(data);
 
         [TestMethod]
-        public void Mock_LookupContext_All()
+        public void Mock_DatastoreContext_All()
         {
             var ret = context.All();
             Assert.AreEqual(6, ret.Count());
         }
 
         [TestMethod]
-        public void Mock_LookupContext_Equals()
+        public void Mock_DatastoreContext_Equals()
         {
             var ret = context.Equals("ONE");
             Assert.AreEqual(1, ret.Count());
@@ -38,14 +38,14 @@ namespace OntologyTypeAheadApi.Tests.Context
         }
 
         [TestMethod]
-        public void Mock_LookupContext_Equals_CaseSensitive()
+        public void Mock_DatastoreContext_Equals_CaseSensitive()
         {
             var ret_cs = context.Equals("ONE", true);
             Assert.AreEqual(null, ret_cs.FirstOrDefault());
         }
 
         [TestMethod]
-        public void Mock_LookupContext_StartsWith()
+        public void Mock_DatastoreContext_StartsWith()
         {
             var ret = context.StartsWith("FOUR").ToList();
             Assert.AreEqual(3, ret.Count());
@@ -53,7 +53,7 @@ namespace OntologyTypeAheadApi.Tests.Context
         }
 
         [TestMethod]
-        public void Mock_LookupContext_StartsWith_CaseSensitive()
+        public void Mock_DatastoreContext_StartsWith_CaseSensitive()
         {
             var ret_cs = context.StartsWith("FOUR", true);
             Assert.AreEqual(1, ret_cs.Count());
@@ -61,7 +61,7 @@ namespace OntologyTypeAheadApi.Tests.Context
         }
 
         [TestMethod]
-        public void Mock_LookupContext_Contains()
+        public void Mock_DatastoreContext_Contains()
         {
             var ret = context.Contains("t").ToList();
             Assert.AreEqual(4, ret.Count());
@@ -69,7 +69,7 @@ namespace OntologyTypeAheadApi.Tests.Context
         }
 
         [TestMethod]
-        public void Mock_LookupContext_Contains_CaseSensitive()
+        public void Mock_DatastoreContext_Contains_CaseSensitive()
         {
             var ret_cs = context.Contains("t", true);
             Assert.AreEqual(1, ret_cs.Count());
