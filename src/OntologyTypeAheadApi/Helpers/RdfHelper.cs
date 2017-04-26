@@ -46,16 +46,13 @@ namespace OntologyTypeAheadApi.Helpers
             return g;
         }
 
-        public static IEnumerable<Owl> GetOwlHierarchy(IGraph graph)
+        public static IEnumerable<LookupItem> GetLookupItems(IGraph graph)
         {
-            IUriNode rdfType = graph.CreateUriNode("rdf:type");
-            IUriNode owlClass = graph.CreateUriNode("owl:Class");
+            List<LookupItem> ret = new List<LookupItem>();
 
-            var triples = graph.GetTriplesWithPredicateObject(rdfType, owlClass);
-
-            var processing = new List<FlatOwl>();
-
-            // Phase 1: Get the data I need out of the Graph
+            IUriNode predNode = graph.CreateUriNode("rdf:type");
+            INode objNode = graph.CreateUriNode("owl:Class");
+            var triples = graph.GetTriplesWithPredicateObject(predNode, objNode);
 
             foreach (var t in triples)
             {
@@ -63,31 +60,10 @@ namespace OntologyTypeAheadApi.Helpers
                 var possible_labels = GetValuesFromTriples(graph.GetTriplesWithSubjectPredicate(t.Subject, rdfsLabel));
                 var label = possible_labels.FirstOrDefault() ?? t.Subject.ToString().Split('/').Reverse().First();
 
-                IUriNode rdfsSubClassOf = graph.CreateUriNode("rdfs:subClassOf");
-                var parents = graph.GetTriplesWithSubjectPredicate(t.Subject, rdfsSubClassOf);
-
-                // remove any 'parents' that aren't also types in the current graph
-                List<Triple> sanitisedParents = new List<Triple>();
-                foreach(var p in parents)
-                {
-                    if (graph.ContainsTriple(new Triple(p.Object, rdfType, owlClass)))
-                        sanitisedParents.Add(p);
-                }
-
-                foreach (var sp in GetValuesFromTriples(sanitisedParents))
-                {
-                    processing.Add(new FlatOwl(t.Subject.ToString(), label, sp));
-                }
-                
+                ret.Add(new LookupItem(t.Subject.ToString(), label));
             }
 
-            // Phase 2: Consolidate the data I need
-            var ret = new List<Owl>();
-            
-
-
-
-            return ret;
+            return ret.OrderBy(x => x.Label).ToList();
         }
         
 

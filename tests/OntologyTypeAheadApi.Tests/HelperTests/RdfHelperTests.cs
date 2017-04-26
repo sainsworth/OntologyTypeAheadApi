@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OntologyTypeAheadApi.Models.Response;
+using OntologyTypeAheadApi.Tests.Helpers;
 using OntologyTypeAheadApi.Models.Response.DataResponse;
 using OntologyTypeAheadApi.Helpers;
 using VDS.RDF;
 using OntologyTypeAheadApi.Enums;
 using System;
+using System.Linq;
 
-namespace OntologyTypeAheadApi.Tests.Helpers
+namespace OntologyTypeAheadApi.Tests.HelperTests
 {
     [TestClass]
     public class RdfHelperTests
@@ -55,38 +56,23 @@ namespace OntologyTypeAheadApi.Tests.Helpers
         }
 
         [TestMethod]
-        public void RdfHelper_GetOwlHierarchy()
+        public void RdfHelper_GetSubjects()
         {
-            var expected = new List<Owl>()
+            var expected = new List<LookupItem>()
             {
-                new Owl() {
-                    Uri = "http://www.stew.test.uk/ontologytypeaheadapi/this",
-                    Label = "This Label",
-                    Children = new List<Owl>()
-                    {
-                        new Owl()
-                        {
-                            Uri = "http://www.stew.test.uk/ontologytypeaheadapi/child_of_this",
-                            Label = "Child Of This Label"
-                        }
-                    }
-                },
-                new Owl ()
-                {
-                    Uri = "http://www.stew.test.uk/ontologytypeaheadapi/that",
-                    Label = "that"
-                },
-                new Owl ()
-                {
-                    Uri = "http://www.stew.test.uk/ontologytypeaheadapi/the_other",
-                    Label = "The Other Label"
-                }
+                new LookupItem("http://www.stew.test.uk/ontologytypeaheadapi/child_of_this", "Child Of This Label"),
+                new LookupItem("http://www.stew.test.uk/ontologytypeaheadapi/that", "that"),
+                new LookupItem("http://www.stew.test.uk/ontologytypeaheadapi/the_other","The Other Label"),
+                new LookupItem("http://www.stew.test.uk/ontologytypeaheadapi/this", "This Label")
             };
 
             // this will fail if RdfHelper_LoadTtl_OK() fails
-            var result = RdfHelper.GetOwlHierarchy(RdfHelper.GetGraphFromOntology(new Ontology(testTtl, RdfSource.String, RdfType.TTL)));
 
-            Assert.AreEqual(expected.AsEnumerable(), result);
+            var graph = RdfHelper.GetGraphFromOntology(new Ontology(testTtl, RdfSource.String, RdfType.TTL));
+            
+            var result = RdfHelper.GetLookupItems(graph).ToList();
+
+            AssertHelper.ListsAreEqual(expected, result);
         }
     }
 }
