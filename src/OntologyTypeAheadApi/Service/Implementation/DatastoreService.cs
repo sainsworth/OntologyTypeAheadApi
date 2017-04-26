@@ -2,17 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using OntologyTypeAheadApi.Models.Contract;
 using OntologyTypeAheadApi.Models.Response;
-using OntologyTypeAheadApi.Models.Response.Envelope;
 using OntologyTypeAheadApi.Models.Response.DataResponse;
-using System.Threading.Tasks;
 using OntologyTypeAheadApi.Context.Contract;
-using VDS.RDF;
-using VDS.RDF.Parsing;
-using OntologyTypeAheadApi.Enums;
 using OntologyTypeAheadApi.Helpers;
+using OntologyTypeAheadApi.Enums;
 
 namespace OntologyTypeAheadApi.Service.Implementation
 {
@@ -20,7 +15,7 @@ namespace OntologyTypeAheadApi.Service.Implementation
     {
         private IDatastoreContext _datastoreContext;
         private IRdfSourceContext _rdfSourceContext;
-        public IResponse<IEnumerable<LookupItem>> GetMatches(string query)
+        public IResponse<IEnumerable<LookupItem>> QueryDatastore_Contains(string query)
         {
             var resp = new EnumerableResponse<LookupItem>();
             if (string.IsNullOrWhiteSpace(query))
@@ -48,20 +43,20 @@ namespace OntologyTypeAheadApi.Service.Implementation
             return resp;
         }
 
-        public IResponse Populate()
+        public IResponse PopulateDatastore()
         {
             var resp = new EmptyResponse();
-
+            IEnumerable<LookupItem> data = new List<LookupItem>();
             try
             {
                 foreach (var x in _rdfSourceContext.All())
                 {
                     var graph = RdfHelper.GetGraphFromOntology(x);
-
-                    var y = graph.Triples;
-                    
+                    var items = RdfHelper.GetLookupItems(graph);
+                    data = data.Concat(items);
                 }
-                //resp.Status = ResponseStatus.DataLoaded;
+                _datastoreContext.Populate(data);
+                resp.Status = ResponseStatus.DataLoaded;
             }
             catch (Exception e)
             {

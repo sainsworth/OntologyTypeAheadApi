@@ -6,6 +6,7 @@ using OntologyTypeAheadApi.Service.Contract;
 using OntologyTypeAheadApi.Service.Implementation;
 using System.Web.Http;
 using Unity.WebApi;
+using System.Configuration;
 
 namespace OntologyTypeAheadApi.App_Start
 {
@@ -18,8 +19,19 @@ namespace OntologyTypeAheadApi.App_Start
             // register all your components with the container here
             // it is NOT necessary to register your controllers
 
-            container.RegisterInstance<IDatastoreContext>(new Mock_DatastoreContext());
-            container.RegisterInstance<IRdfSourceContext>(new Mock_RdfSourceContext());
+            switch (ConfigurationManager.AppSettings["Datastore"].ToUpper())
+            {
+                case "MOCK":
+                    container.RegisterInstance<IDatastoreContext>(new Mock_DatastoreContext());
+                    break;
+
+            }
+            switch (ConfigurationManager.AppSettings["RdfSource"].ToUpper())
+            {
+                case "MOCK":
+                    container.RegisterInstance<IRdfSourceContext>(new Mock_RdfSourceContext());
+                    break;
+            }
 
             container.RegisterType<IDatastoreService, DatastoreService>();
             container.RegisterType(typeof(LookupController));

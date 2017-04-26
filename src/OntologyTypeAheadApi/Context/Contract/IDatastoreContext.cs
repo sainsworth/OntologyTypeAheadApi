@@ -9,5 +9,6 @@ namespace OntologyTypeAheadApi.Context.Contract
         IEnumerable<LookupItem> Equals(string query, bool casesensitive = false);
         IEnumerable<LookupItem> StartsWith(string query, bool casesensitive = false);
         IEnumerable<LookupItem> Contains(string query, bool casesensitive = false);
+        void Populate(IEnumerable<LookupItem> data);
     }
 }

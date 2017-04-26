@@ -21,7 +21,7 @@ namespace OntologyTypeAheadApi.Controllers
                 Route = "lookup/{query}",
                 Details = new { Query = query }
             };
-            var response = _datastoreService.GetMatches(query);
+            var response = _datastoreService.QueryDatastore_Contains(query);
 
             return HttpResponseHelper.StandardiseResponse(request, response);
         }

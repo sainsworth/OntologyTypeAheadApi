@@ -27,7 +27,7 @@ namespace OntologyTypeAheadApi.Controllers
             {
                 Route = "management/populate",
             };
-            var response = _datastoreService.Populate();
+            var response = _datastoreService.PopulateDatastore();
 
             return HttpResponseHelper.StandardiseResponse(request, response);
         }
