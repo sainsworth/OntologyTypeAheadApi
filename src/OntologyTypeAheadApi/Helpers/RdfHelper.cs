@@ -46,9 +46,9 @@ namespace OntologyTypeAheadApi.Helpers
             return g;
         }
 
-        public static IEnumerable<LookupItem> GetLookupItems(IGraph graph)
+        public static Dictionary<string,string> GetFlatDataFromGraph(IGraph graph)
         {
-            List<LookupItem> ret = new List<LookupItem>();
+            Dictionary<string, string> ret = new Dictionary<string, string>();
 
             IUriNode predNode = graph.CreateUriNode("rdf:type");
             INode objNode = graph.CreateUriNode("owl:Class");
@@ -60,10 +60,10 @@ namespace OntologyTypeAheadApi.Helpers
                 var possible_labels = GetValuesFromTriples(graph.GetTriplesWithSubjectPredicate(t.Subject, rdfsLabel));
                 var label = possible_labels.FirstOrDefault() ?? t.Subject.ToString().Split('/').Reverse().First();
 
-                ret.Add(new LookupItem(t.Subject.ToString(), label));
+                if (!ret.ContainsKey(t.Subject.ToString()))
+                    ret.Add(t.Subject.ToString(), label);
             }
-
-            return ret.OrderBy(x => x.Label).ToList();
+            return ret;
         }
         
 
@@ -75,22 +75,6 @@ namespace OntologyTypeAheadApi.Helpers
             return ret;
         }
 
-        #region Encapsulated POCOs 
-
-        private class FlatOwl
-        {
-            public string Uri { get; set; }
-            public string Label { get; set; }
-            public string Parent { get; set; }
-
-            public FlatOwl(string uri, string label, string parent)
-            {
-                Uri = uri;
-                Label = label;
-                Parent = parent;
-            }
-        }
-
-        #endregion
+       
     }
 }

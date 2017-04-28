@@ -95,9 +95,11 @@ namespace OntologyTypeAheadApi.Context.Implementation
             return ret;
         }
 
-        public void Populate(IEnumerable<LookupItem> data)
+        public void Populate(Dictionary<string,string> data)
         {
-            _data = data;
+            var newData = new List<LookupItem>();
+            data.ToList().ForEach(x => newData.Add(new LookupItem(x.Key, x.Value)));
+            _data = newData;
         }
 
         public Mock_DatastoreContext(IEnumerable<LookupItem> data)

@@ -29,7 +29,7 @@ namespace OntologyTypeAheadApi.Service.Implementation
                         resp.Status = Enums.ResponseStatus.NoResponse;
                     else
                     {
-                        resp.Data = data;
+                        resp.Data = data.OrderBy(x => x.Label);
                         resp.Status = Enums.ResponseStatus.OK;
                     }
                 }
@@ -46,16 +46,17 @@ namespace OntologyTypeAheadApi.Service.Implementation
         public IResponse PopulateDatastore()
         {
             var resp = new EmptyResponse();
-            IEnumerable<LookupItem> data = new List<LookupItem>();
+            Dictionary<string, string> data = new Dictionary<string, string>();
             try
             {
                 foreach (var x in _rdfSourceContext.All())
                 {
                     var graph = RdfHelper.GetGraphFromOntology(x);
-                    var items = RdfHelper.GetLookupItems(graph);
-                    data = data.Concat(items);
+                    var items = RdfHelper.GetFlatDataFromGraph(graph);
+
+                    items.ToList().ForEach(y => data[y.Key] = y.Value);
                 }
-                _datastoreContext.Populate(data);
+               _datastoreContext.Populate(data);
                 resp.Status = ResponseStatus.DataLoaded;
             }
             catch (Exception e)
@@ -66,9 +67,6 @@ namespace OntologyTypeAheadApi.Service.Implementation
 
             return resp;
         }
-
-
-        
 
         public DatastoreService(IDatastoreContext datastoreContext, IRdfSourceContext rdfSourceContext)
         {

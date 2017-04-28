@@ -37,12 +37,21 @@ namespace OntologyTypeAheadApi.Tests.HelperTests
                                                              
 ";
 
-        IGraph graph = null;
-
         [TestMethod]
-        public void RdfHelper_LoadTtl_OK()
+        public void RdfHelper_GetLookupItems()
         {
+            var expected = new Dictionary<string, string>()
+            {
+                { "http://www.stew.test.uk/ontologytypeaheadapi/this", "This Label" },
+                { "http://www.stew.test.uk/ontologytypeaheadapi/that", "that" },
+                { "http://www.stew.test.uk/ontologytypeaheadapi/the_other","The Other Label" },
+                { "http://www.stew.test.uk/ontologytypeaheadapi/child_of_this", "Child Of This Label" }
+            };
+
+            // this will fail if RdfHelper_LoadTtl_OK() fails
+
             Exception e = null;
+            IGraph graph = null;
             try
             {
                 graph = RdfHelper.GetGraphFromOntology(new Ontology(testTtl, RdfSource.String, RdfType.TTL));
@@ -53,26 +62,10 @@ namespace OntologyTypeAheadApi.Tests.HelperTests
             }
 
             Assert.AreEqual(null, e);
-        }
 
-        [TestMethod]
-        public void RdfHelper_GetSubjects()
-        {
-            var expected = new List<LookupItem>()
-            {
-                new LookupItem("http://www.stew.test.uk/ontologytypeaheadapi/child_of_this", "Child Of This Label"),
-                new LookupItem("http://www.stew.test.uk/ontologytypeaheadapi/that", "that"),
-                new LookupItem("http://www.stew.test.uk/ontologytypeaheadapi/the_other","The Other Label"),
-                new LookupItem("http://www.stew.test.uk/ontologytypeaheadapi/this", "This Label")
-            };
+            var result = RdfHelper.GetFlatDataFromGraph(graph);
 
-            // this will fail if RdfHelper_LoadTtl_OK() fails
-
-            var graph = RdfHelper.GetGraphFromOntology(new Ontology(testTtl, RdfSource.String, RdfType.TTL));
-            
-            var result = RdfHelper.GetLookupItems(graph).ToList();
-
-            AssertHelper.ListsAreEqual(expected, result);
+            AssertHelper.DictionariesAreEqual(expected, result);
         }
     }
 }
