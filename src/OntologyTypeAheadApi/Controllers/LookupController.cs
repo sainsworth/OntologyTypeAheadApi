@@ -13,15 +13,15 @@ namespace OntologyTypeAheadApi.Controllers
         private readonly IDatastoreService _datastoreService;
 
         [HttpGet]
-        [Route("lookup/{query}")]
-        public HttpResponseMessage LookupFromQuery(string query)
+        [Route("lookup/{accessor}/")]
+        public HttpResponseMessage LookupFromQuery(string accessor, string query)
         {
             var request = new ConformedRequest()
             {
-                Route = "lookup/{query}",
-                Details = new { Query = query }
+                Route = "lookup/{accessor}",
+                Details = new { Accessor = accessor, Query = query }
             };
-            var response = _datastoreService.QueryDatastore_Contains(query);
+            var response = _datastoreService.QueryDatastore_Contains(accessor, query);
 
             return HttpResponseHelper.StandardiseResponse(request, response);
         }

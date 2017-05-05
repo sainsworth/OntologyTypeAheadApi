@@ -11,34 +11,48 @@ namespace OntologyTypeAheadApi.Context.Implementation
 {
     public class Mock_DatastoreContext : IDatastoreContext
     {
-        private IEnumerable<LookupItem> _data;
+        private Dictionary<string,IEnumerable<LookupItem>> _data;
 
         public Mock_DatastoreContext()
         {
             _data = SetupMockData();
         }
 
-        public IEnumerable<LookupItem> All()
+        public IEnumerable<LookupItem> All(string accessor)
         {
-            return _data;
+            return _data[accessor];
         }
 
-        public IEnumerable<LookupItem> Contains(string query, bool casesensitive = false)
+        public IEnumerable<LookupItem> Contains(string accessor, string query, bool casesensitive = false)
         {
             var mode = _sanitiseStringMode(casesensitive);
-            return _data.Where(x => x.Label.Sanitise(mode).Contains(query.Sanitise(mode))).AsEnumerable();
+            if (!_data.ContainsKey(accessor.ToLowerInvariant()))
+                return null;
+            var thisdata = _data[accessor];
+            if (thisdata != null)
+                return thisdata.Where(x => x.Label.Sanitise(mode).Contains(query.Sanitise(mode))).AsEnumerable();
+            else
+                return null;
         }
 
-        public IEnumerable<LookupItem> Equals(string query, bool casesensitive = false)
+        public IEnumerable<LookupItem> Equals(string accessor, string query, bool casesensitive = false)
         {
             var mode = _sanitiseStringMode(casesensitive);
-            return _data.Where(x => x.Label.Sanitise(mode) == query.Sanitise(mode)).AsEnumerable();
+            var thisdata = _data[accessor];
+            if (thisdata != null)
+                return thisdata.Where(x => x.Label.Sanitise(mode) == query.Sanitise(mode)).AsEnumerable();
+            else
+                return null;
         }
 
-        public IEnumerable<LookupItem> StartsWith(string query, bool casesensitive = false)
+        public IEnumerable<LookupItem> StartsWith(string accessor, string query, bool casesensitive = false)
         {
             var mode = _sanitiseStringMode(casesensitive);
-            return _data.Where(x => x.Label.Sanitise(mode).StartsWith(query.Sanitise(mode))).AsEnumerable();
+            var thisdata = _data[accessor];
+            if (thisdata != null)
+                return thisdata.Where(x => x.Label.Sanitise(mode).StartsWith(query.Sanitise(mode))).AsEnumerable();
+            else
+                return null;
         }
 
         private StringExtensions.SanitiseStringMode _sanitiseStringMode(bool casesensitive)
@@ -46,7 +60,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
             return casesensitive ? StringExtensions.SanitiseStringMode.KeepCase : StringExtensions.SanitiseStringMode.ToUpper;
         }
 
-        private IEnumerable<LookupItem> SetupMockData()
+        private Dictionary<string,IEnumerable<LookupItem>> SetupMockData()
         {
             var towns = new List<string>() {
                 "Abingdon-on-Thames",
@@ -89,22 +103,29 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 "Aylesbury",
                 "Aylsham"
             };
-            var ret = new List<LookupItem>();
+            var data = new List<LookupItem>();
             for(int i = 0; i < towns.Count; i++)
-                ret.Add(new LookupItem(i.ToString(), towns[i]));
+                data.Add(new LookupItem(i.ToString(), towns[i]));
+            var ret = new Dictionary<string, IEnumerable<LookupItem>>();
+            ret.Add("mock", data);
             return ret;
         }
 
-        public void Populate(Dictionary<string,string> data)
+        public void Populate(Dictionary<string,Dictionary<string,string>> data)
         {
-            var newData = new List<LookupItem>();
-            data.ToList().ForEach(x => newData.Add(new LookupItem(x.Key, x.Value)));
-            _data = newData;
+            _data = new Dictionary<string, IEnumerable<LookupItem>>();
+            foreach (var d in data)
+            {
+                var thisdata= new List<LookupItem>();
+                d.Value.ToList().ForEach(x => thisdata.Add(new LookupItem(x.Key, x.Value)));
+                _data[d.Key] = thisdata;
+            }
         }
 
-        public Mock_DatastoreContext(IEnumerable<LookupItem> data)
+        public Mock_DatastoreContext(Dictionary<string,IEnumerable<LookupItem>> data)
         {
-            _data = data;
+            _data = new Dictionary<string, IEnumerable<LookupItem>>();
+            data.ToList().ForEach(x => _data[x.Key.ToLowerInvariant()] = x.Value);
         }
     }
 }

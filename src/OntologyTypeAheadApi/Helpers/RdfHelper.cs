@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using VDS.RDF;
 using VDS.RDF.Parsing;
+using VDS.RDF.Query;
 
 namespace OntologyTypeAheadApi.Helpers
 {
@@ -15,18 +16,18 @@ namespace OntologyTypeAheadApi.Helpers
         public static IGraph GetGraphFromOntology(Ontology ontology)
         {
             IGraph g = new Graph();
-            IRdfReader r = ontology.Type == RdfType.TTL ? new TurtleParser() : null;
+            IRdfReader r = ontology.RdfType == RdfType.TTL ? new TurtleParser() : null;
 
-            if (ontology.Source == RdfSource.Uri)
+            if (ontology.RdfSource == RdfSource.Uri)
             {
                 if (r == null)
                     UriLoader.Load(g, new Uri(ontology.Location));
                 else
                     UriLoader.Load(g, new Uri(ontology.Location), r);
             }
-            else if (ontology.Type == RdfType.TTL)
+            else if (ontology.RdfType == RdfType.TTL)
             {
-                if (ontology.Source == RdfSource.String)
+                if (ontology.RdfSource == RdfSource.String)
                     r.Load(g, new StringReader(ontology.Location));
                 else
                     r.Load(g, ontology.Location);
@@ -46,26 +47,53 @@ namespace OntologyTypeAheadApi.Helpers
             return g;
         }
 
-        public static Dictionary<string,string> GetFlatDataFromGraph(IGraph graph)
+        public static Dictionary<string,string> GetFlatDataFromGraph(IEnumerable<string>rootTypes, IGraph graph)
         {
             Dictionary<string, string> ret = new Dictionary<string, string>();
 
-            IUriNode predNode = graph.CreateUriNode("rdf:type");
-            INode objNode = graph.CreateUriNode("owl:Class");
-            var triples = graph.GetTriplesWithPredicateObject(predNode, objNode);
+            List<string> subjectList = new List<string>();
 
-            foreach (var t in triples)
+            var roots = getWhereSubclassOf(rootTypes, graph);
+            var allroots = roots;
+            while (roots.Count() > 0)
             {
-                IUriNode rdfsLabel = graph.CreateUriNode("rdfs:label");
-                var possible_labels = GetValuesFromTriples(graph.GetTriplesWithSubjectPredicate(t.Subject, rdfsLabel));
-                var label = possible_labels.FirstOrDefault() ?? t.Subject.ToString().Split('/').Reverse().First();
-
-                if (!ret.ContainsKey(t.Subject.ToString()))
-                    ret.Add(t.Subject.ToString(), label);
+                roots = getWhereSubclassOf(roots, graph);
+                allroots = allroots.Concat(roots).ToList();
             }
+
+            //IUriNode predNode = graph.CreateUriNode("rdf:type");
+            //INode objNode = graph.CreateUriNode("owl:Class");
+            //var triples = graph.GetTriplesWithPredicateObject(predNode, objNode);
+            //foreach (var t in triples)
+            //{
+            //    IUriNode rdfsLabel = graph.CreateUriNode("rdfs:label");
+            //    var possible_labels = GetValuesFromTriples(graph.GetTriplesWithSubjectPredicate(t.Subject, rdfsLabel));
+            //    var label = possible_labels.FirstOrDefault() ?? t.Subject.ToString().Split('/').Reverse().First();
+
+            //    ret[t.Subject.ToString()] = label;
+            //}
             return ret;
         }
         
+        private static IEnumerable<string> getWhereSubclassOf(IEnumerable<string> roots, IGraph graph)
+        {
+            var ret = new List<string>();
+            foreach (var x in roots)
+            {
+                var q = @"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?subject
+WHERE { ?subject rdfs:subClassOf <" + x + "> }";
+                var r = (SparqlResultSet)graph.ExecuteQuery(q);
+                r.Results.ForEach(y =>
+                {
+                    for (int i = 0; i < y.Count(); i++)
+                    {
+                        ret.Add(y.Value("subject").ToString());
+                    }
+                });
+            }
+            return ret;
+        }
 
         public static IEnumerable<string> GetValuesFromTriples(IEnumerable<Triple> triples)
         {

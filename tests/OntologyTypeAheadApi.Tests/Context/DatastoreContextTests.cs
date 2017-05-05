@@ -23,20 +23,24 @@ namespace OntologyTypeAheadApi.Tests.Context
             new LookupItem("40", "FOURTY"),
             new LookupItem("41", "Fourty one"),
         };
+        public static Dictionary<string, IEnumerable<LookupItem>> datastore = new Dictionary<string, IEnumerable<LookupItem>>
+        {
+            { "test", data }
+        };
 
-        public static IDatastoreContext mock_context = new Mock_DatastoreContext(data);
+        public static IDatastoreContext mock_context = new Mock_DatastoreContext(datastore);
 
         [TestMethod]
         public void Mock_DatastoreContext_All()
         {
-            var ret = mock_context.All();
+            var ret = mock_context.All("test");
             Assert.AreEqual(6, ret.Count());
         }
 
         [TestMethod]
         public void Mock_DatastoreContext_Equals()
         {
-            var ret = mock_context.Equals("ONE");
+            var ret = mock_context.Equals("test","ONE");
             Assert.AreEqual(1, ret.Count());
             Assert.AreEqual("One", ret.First().Label);
         }
@@ -44,14 +48,14 @@ namespace OntologyTypeAheadApi.Tests.Context
         [TestMethod]
         public void Mock_DatastoreContext_Equals_CaseSensitive()
         {
-            var ret_cs = mock_context.Equals("ONE", true);
+            var ret_cs = mock_context.Equals("test","ONE", true);
             Assert.AreEqual(null, ret_cs.FirstOrDefault());
         }
 
         [TestMethod]
         public void Mock_DatastoreContext_StartsWith()
         {
-            var ret = mock_context.StartsWith("FOUR").ToList();
+            var ret = mock_context.StartsWith("test","FOUR").ToList();
             Assert.AreEqual(3, ret.Count());
             Assert.AreEqual("Four", ret.First().Label);
         }
@@ -59,7 +63,7 @@ namespace OntologyTypeAheadApi.Tests.Context
         [TestMethod]
         public void Mock_DatastoreContext_StartsWith_CaseSensitive()
         {
-            var ret_cs = mock_context.StartsWith("FOUR", true);
+            var ret_cs = mock_context.StartsWith("test","FOUR", true);
             Assert.AreEqual(1, ret_cs.Count());
             Assert.AreEqual("FOURTY", ret_cs.First().Label);
         }
@@ -67,7 +71,7 @@ namespace OntologyTypeAheadApi.Tests.Context
         [TestMethod]
         public void Mock_DatastoreContext_Contains()
         {
-            var ret = mock_context.Contains("t").ToList();
+            var ret = mock_context.Contains("test","t").ToList();
             Assert.AreEqual(4, ret.Count());
             Assert.AreEqual("Two", ret.First().Label);
         }
@@ -75,7 +79,7 @@ namespace OntologyTypeAheadApi.Tests.Context
         [TestMethod]
         public void Mock_DatastoreContext_Contains_CaseSensitive()
         {
-            var ret_cs = mock_context.Contains("t", true);
+            var ret_cs = mock_context.Contains("test","t", true);
             Assert.AreEqual(1, ret_cs.Count());
             Assert.AreEqual("Fourty one", ret_cs.First().Label);
         }

@@ -140,18 +140,25 @@
 				
 				
 				
+###  http://www.stew.test.uk/dummy_ontology/Starts_with_A
+<http://www.stew.test.uk/dummy_ontology/Starts_with_A> rdf:type owl:Class ;
+                                                            rdfs:label "Starts with A" .
+															
 ###  http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston
 <http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston> rdf:type owl:Class ;
+                                                            rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Starts_with_A> ;
                                                             rdfs:label "Abingdon to Alston" .
 
 
 ###  http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford
 <http://www.stew.test.uk/dummy_ontology/Alton_to_Ashford> rdf:type owl:Class ;
+                                                            rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Starts_with_A> ;
                                                             rdfs:label "Alton to Ashford" .
 
 
 ###  http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham
 <http://www.stew.test.uk/dummy_ontology/Ashby_to_Aylesham> rdf:type owl:Class ;
+                                                            rdfs:subClassOf <http://www.stew.test.uk/dummy_ontology/Starts_with_A> ;
                                                            rdfs:label "Ashby to Aylesham" .
 														   
 ###  http://www.stew.test.uk/dummy_ontology/Starts_with_Ash

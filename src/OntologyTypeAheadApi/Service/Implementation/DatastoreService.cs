@@ -15,7 +15,7 @@ namespace OntologyTypeAheadApi.Service.Implementation
     {
         private IDatastoreContext _datastoreContext;
         private IRdfSourceContext _rdfSourceContext;
-        public IResponse<IEnumerable<LookupItem>> QueryDatastore_Contains(string query)
+        public IResponse<IEnumerable<LookupItem>> QueryDatastore_Contains(string accessor, string query)
         {
             var resp = new EnumerableResponse<LookupItem>();
             if (string.IsNullOrWhiteSpace(query))
@@ -24,7 +24,7 @@ namespace OntologyTypeAheadApi.Service.Implementation
             {
                 try
                 {
-                    var data = _datastoreContext.Contains(query);
+                    var data = _datastoreContext.Contains(accessor, query);
                     if (data == null || (data != null && data.Count() == 0))
                         resp.Status = Enums.ResponseStatus.NoResponse;
                     else
@@ -46,17 +46,17 @@ namespace OntologyTypeAheadApi.Service.Implementation
         public IResponse PopulateDatastore()
         {
             var resp = new EmptyResponse();
-            Dictionary<string, string> data = new Dictionary<string, string>();
+            Dictionary<string,Dictionary<string, string>> data = new Dictionary<string,Dictionary<string, string>>();
             try
             {
                 foreach (var x in _rdfSourceContext.All())
                 {
                     var graph = RdfHelper.GetGraphFromOntology(x);
-                    var items = RdfHelper.GetFlatDataFromGraph(graph);
+                    var items = RdfHelper.GetFlatDataFromGraph(x.RootTypes, graph);
 
-                    items.ToList().ForEach(y => data[y.Key] = y.Value);
+                    data[x.Accessor] = items;
                 }
-               _datastoreContext.Populate(data);
+                _datastoreContext.Populate(data);
                 resp.Status = ResponseStatus.DataLoaded;
             }
             catch (Exception e)

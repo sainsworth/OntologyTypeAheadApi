@@ -21,7 +21,7 @@ namespace OntologyTypeAheadApi.Tests.Context
             new LookupItem("41", "Fourty one"),
         };
 
-        public static IDatastoreContext mock_context = new Mock_DatastoreContext(data);
+        //public static IDatastoreContext mock_context = new Mock_DatastoreContext(data);
 
         //[TestMethod]
         //public void Mock_DatastoreContext_All()

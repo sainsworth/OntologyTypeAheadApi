@@ -23,12 +23,18 @@ namespace OntologyTypeAheadApi.Tests.HelperTests
 
 <http://www.stew.test.uk/ontologytypeaheadapi> rdf:type owl:Ontology .
 
+<http://www.stew.test.uk/ontologytypeaheadapi/root> rdf:type owl:Class ;
+                                                    rdfs:label ""Root Label"" .
+
 <http://www.stew.test.uk/ontologytypeaheadapi/this> rdf:type owl:Class ;
+                                                    rdfs:subClassOf <http://www.stew.test.uk/ontologytypeaheadapi/root> ;
                                                     rdfs:label ""This Label"" .
 				
-<http://www.stew.test.uk/ontologytypeaheadapi/that> rdf:type owl:Class .
+<http://www.stew.test.uk/ontologytypeaheadapi/that> rdf:type owl:Class ;
+                                                    rdfs:subClassOf <http://www.stew.test.uk/ontologytypeaheadapi/root> .
 
 <http://www.stew.test.uk/ontologytypeaheadapi/the_other> rdf:type owl:Class ;
+                                                         rdfs:subClassOf <http://www.stew.test.uk/ontologytypeaheadapi/root> ;
                                                          rdfs:label ""The Other Label"" .
 
 <http://www.stew.test.uk/ontologytypeaheadapi/child_of_this> rdf:type owl:Class ;
@@ -52,9 +58,16 @@ namespace OntologyTypeAheadApi.Tests.HelperTests
 
             Exception e = null;
             IGraph graph = null;
+
+            var ontology = new Ontology(
+                               testTtl,
+                               "test",
+                               new List<string>() { "http://www.stew.test.uk/ontologytypeaheadapi/root" },
+                               RdfSource.String, RdfType.TTL
+                           );
             try
             {
-                graph = RdfHelper.GetGraphFromOntology(new Ontology(testTtl, RdfSource.String, RdfType.TTL));
+                graph = RdfHelper.GetGraphFromOntology(ontology);
             }
             catch (Exception ee)
             {
@@ -63,7 +76,7 @@ namespace OntologyTypeAheadApi.Tests.HelperTests
 
             Assert.AreEqual(null, e);
 
-            var result = RdfHelper.GetFlatDataFromGraph(graph);
+            var result = RdfHelper.GetFlatDataFromGraph(ontology.RootTypes, graph);
 
             AssertHelper.DictionariesAreEqual(expected, result);
         }
