@@ -61,6 +61,16 @@ namespace OntologyTypeAheadApi.Helpers
                 allroots = allroots.Concat(roots).ToList();
             }
 
+            foreach (var r in allroots)
+            {
+                IUriNode rdfsLabel = graph.CreateUriNode("rdfs:label");
+                IUriNode subject = graph.CreateUriNode(new Uri(r));
+                var possible_labels = GetValuesFromTriples(graph.GetTriplesWithSubjectPredicate(subject, rdfsLabel));
+                var label = possible_labels.FirstOrDefault() ?? r.Split('/').Reverse().First();
+
+                ret[r] = label;
+            }
+
             //IUriNode predNode = graph.CreateUriNode("rdf:type");
             //INode objNode = graph.CreateUriNode("owl:Class");
             //var triples = graph.GetTriplesWithPredicateObject(predNode, objNode);
