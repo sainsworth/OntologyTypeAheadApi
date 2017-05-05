@@ -23,6 +23,9 @@ namespace OntologyTypeAheadApi.Tests.HelperTests
 
 <http://www.stew.test.uk/ontologytypeaheadapi> rdf:type owl:Ontology .
 
+<http://www.stew.test.uk/ontologytypeaheadapi/anotherroot> rdf:type owl:Class ;
+                                                    rdfs:label ""Some Other Root Label"" .
+
 <http://www.stew.test.uk/ontologytypeaheadapi/root> rdf:type owl:Class ;
                                                     rdfs:label ""Root Label"" .
 
