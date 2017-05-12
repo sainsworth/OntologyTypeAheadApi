@@ -15,8 +15,8 @@ namespace OntologyTypeAheadApi.Context.Implementation
         {
             return new List<Ontology>() {
                 new Ontology(
-                    Path.Combine(HttpContext.Current.Request.PhysicalApplicationPath,@"App_Data\Dummy_Ontology.ttl"),
-                    "dummy",
+                    Path.Combine(HttpContext.Current.Request.PhysicalApplicationPath,@"App_Data\TownsStartingA_Ontology.ttl"),
+                    "a_towns",
                     new List<string>() { "http://www.stew.test.uk/dummy_ontology/Starts_with_A"},
                     RdfSource.File,
                     RdfType.TTL)

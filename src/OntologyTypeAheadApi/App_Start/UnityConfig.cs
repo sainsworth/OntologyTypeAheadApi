@@ -24,7 +24,10 @@ namespace OntologyTypeAheadApi.App_Start
                 case "MOCK":
                     container.RegisterInstance<IDatastoreContext>(new Mock_DatastoreContext());
                     break;
-
+                case "ELASTIC":
+                    var elasticUrl = ConfigurationManager.AppSettings["ElasticUrl"];
+                    container.RegisterInstance<IDatastoreContext>(new Elastic_DatastoreContext(elasticUrl));
+                    break;
             }
             switch (ConfigurationManager.AppSettings["RdfSource"].ToUpper())
             {

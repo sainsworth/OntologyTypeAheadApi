@@ -188,6 +188,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Context\Contract\IDatastoreContext.cs" />
     <Compile Include="Context\Contract\IRdfSourceContext.cs" />
+    <Compile Include="Context\Implementation\Elastic_DatastoreContext.cs" />
     <Compile Include="Context\Implementation\Mock_DatastoreContext.cs" />
     <Compile Include="Context\Implementation\Mock_RdfSourceContext.cs" />
     <Compile Include="Controllers\LookupController.cs" />
@@ -230,7 +231,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="App_Data\Dummy_Ontology.ttl">
+    <Content Include="App_Data\TownsStartingA_Ontology.ttl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Project_Readme.html" />

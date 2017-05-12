@@ -20,17 +20,16 @@ namespace OntologyTypeAheadApi.Context.Implementation
 
         public IEnumerable<LookupItem> All(string accessor)
         {
-            return _data[accessor];
+            if (_data.ContainsKey(accessor.ToLowerInvariant()))
+                return _data[accessor.ToLowerInvariant()];
+            return null;
         }
 
         public IEnumerable<LookupItem> Contains(string accessor, string query, bool casesensitive = false)
         {
             var mode = _sanitiseStringMode(casesensitive);
-            if (!_data.ContainsKey(accessor.ToLowerInvariant()))
-                return null;
-            var thisdata = _data[accessor];
-            if (thisdata != null)
-                return thisdata.Where(x => x.Label.Sanitise(mode).Contains(query.Sanitise(mode))).AsEnumerable();
+            if (_data.ContainsKey(accessor.ToLowerInvariant()))
+                return _data[accessor.ToLowerInvariant()].Where(x => x.Label.Sanitise(mode).Contains(query.Sanitise(mode))).AsEnumerable();
             else
                 return null;
         }
@@ -38,9 +37,8 @@ namespace OntologyTypeAheadApi.Context.Implementation
         public IEnumerable<LookupItem> Equals(string accessor, string query, bool casesensitive = false)
         {
             var mode = _sanitiseStringMode(casesensitive);
-            var thisdata = _data[accessor];
-            if (thisdata != null)
-                return thisdata.Where(x => x.Label.Sanitise(mode) == query.Sanitise(mode)).AsEnumerable();
+            if (_data.ContainsKey(accessor.ToLowerInvariant()))
+                return _data[accessor.ToLowerInvariant()].Where(x => x.Label.Sanitise(mode) == query.Sanitise(mode)).AsEnumerable();
             else
                 return null;
         }
@@ -48,9 +46,8 @@ namespace OntologyTypeAheadApi.Context.Implementation
         public IEnumerable<LookupItem> StartsWith(string accessor, string query, bool casesensitive = false)
         {
             var mode = _sanitiseStringMode(casesensitive);
-            var thisdata = _data[accessor];
-            if (thisdata != null)
-                return thisdata.Where(x => x.Label.Sanitise(mode).StartsWith(query.Sanitise(mode))).AsEnumerable();
+            if (_data.ContainsKey(accessor.ToLowerInvariant()))
+                return _data[accessor.ToLowerInvariant()].Where(x => x.Label.Sanitise(mode).StartsWith(query.Sanitise(mode))).AsEnumerable();
             else
                 return null;
         }
