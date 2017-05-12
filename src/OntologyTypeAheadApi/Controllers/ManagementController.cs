@@ -21,13 +21,13 @@ namespace OntologyTypeAheadApi.Controllers
 
         [HttpGet]
         [Route("management/populate")]
-        public HttpResponseMessage PopulateDataStore()
+        public async Task<HttpResponseMessage> PopulateDataStore()
         {
             var request = new ConformedRequest()
             {
                 Route = "management/populate",
             };
-            var response = _datastoreService.PopulateDatastore();
+            var response = await _datastoreService.PopulateDatastore();
 
             return HttpResponseHelper.StandardiseResponse(request, response);
         }

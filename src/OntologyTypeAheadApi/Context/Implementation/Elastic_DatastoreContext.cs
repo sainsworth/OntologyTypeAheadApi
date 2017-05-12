@@ -19,12 +19,12 @@ namespace OntologyTypeAheadApi.Context.Implementation
 
         private Uri _elasticUrl;
 
-        public IEnumerable<LookupItem> All(string accessor)
+        public async Task<IEnumerable<LookupItem>> All(string accessor)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<LookupItem> Contains(string accessor, string query, bool casesensitive = false)
+        public async Task<IEnumerable<LookupItem>> Contains(string accessor, string query, bool casesensitive = false)
         {
             var count = getCount(accessor);
 
@@ -33,23 +33,12 @@ namespace OntologyTypeAheadApi.Context.Implementation
             throw new NotImplementedException();
         }
 
-        public IEnumerable<LookupItem> Equals(string accessor, string query, bool casesensitive = false)
+        public async Task<IEnumerable<LookupItem>> Equals(string accessor, string query, bool casesensitive = false)
         {
             throw new NotImplementedException();
         }
 
-        public void Populate(Dictionary<string, Dictionary<string, string>> data)
-        {
-            trashAllData();
-
-            foreach(var x in data)
-            {
-                addItemsToIndex(x.Key, x.Value);
-            }
-
-        }
-
-        public IEnumerable<LookupItem> StartsWith(string accessor, string query, bool casesensitive = false)
+        public async Task<IEnumerable<LookupItem>> StartsWith(string accessor, string query, bool casesensitive = false)
         {
             throw new NotImplementedException();
         }
@@ -59,38 +48,39 @@ namespace OntologyTypeAheadApi.Context.Implementation
             _elasticUrl = new Uri(elasticUrl);
         }
 
-        private void trashAllData()
+        public async Task Populate(Dictionary<string, Dictionary<string, string>> data)
+        {
+            await trashAllData();
+
+            foreach (var x in data)
+            {
+                await addItemsToIndex(x.Key, x.Value);
+            }
+
+        }
+        private async Task trashAllData()
         {
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
             {
                 client.BaseAddress = _elasticUrl;
-                Task<HttpResponseMessage> response = Task.Run(async () =>
-                {
-                    var r = await client.DeleteAsync("_all");
-                    return r;
-                });
-
+                var r = await client.DeleteAsync("_all");
+                
                 //Success equals:
                 //HTTP200
                 //{
                 //    "acknowledged": true
                 //}
 
-                if (response.Result.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Deleting existing Elastic Data did not return OK - {response.Result.StatusCode.ToString()} - {response.Result.Content.ToString()}");
+                if (r.StatusCode != HttpStatusCode.OK)
+                    throw new Exception($"Deleting existing Elastic Data did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
             }
         }
         
-        private void createElasticIndex(string indexName)
+        private async Task createElasticIndex(string indexName)
         {
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
             {
-                client.BaseAddress = _elasticUrl;
-                Task<HttpResponseMessage> response = Task.Run(async () =>
-                {
-                    var r = await client.PutAsync(indexName, new StringContent(""));
-                    return r;
-                });
+                var r = await client.PutAsync(indexName, new StringContent(""));
 
                 //Success equals:
                 //HTTP200
@@ -99,24 +89,20 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 //    "shards_acknowledged": true
                 //}
 
-                if (response.Result.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Creating Elastic Index {indexName} did not return OK - {response.Result.StatusCode.ToString()} - {response.Result.Content.ToString()}");
+                if (r.StatusCode != HttpStatusCode.OK)
+                    throw new Exception($"Creating Elastic Index {indexName} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
             }
         }
 
         // uses our Id as the elastic Id
-        private void addItemToIndex(string accessor, KeyValuePair<string, string> item)
+        private async Task addItemToIndex(string accessor, KeyValuePair<string, string> item)
         {
             var data = new { Label = item.Value };
             var content = new StringContent(JsonConvert.SerializeObject(data, Formatting.None).ToString(), Encoding.UTF8, "application/json");
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
             {
                 client.BaseAddress = _elasticUrl;
-                Task<HttpResponseMessage> response = Task.Run(async () =>
-                {
-                    var r = await client.PostAsync($"lookupitems/{accessor.ToLowerInvariant()}/{HttpUtility.UrlEncode(item.Key)}", content);
-                    return r;
-                });
+                var r = await client.PostAsync($"lookupitems/{accessor.ToLowerInvariant()}/{HttpUtility.UrlEncode(item.Key)}", content);
 
                 //Success equals:
                 //HTTP200
@@ -125,13 +111,13 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 //    "shards_acknowledged": true
                 //}
 
-                if (response.Result.StatusCode != HttpStatusCode.Created)
-                    throw new Exception($"Creating Elastic item _type = {accessor} Label = {item.Key} did not return OK - {response.Result.StatusCode.ToString()} - {response.Result.Content.ToString()}");
+                if (r.StatusCode != HttpStatusCode.Created)
+                    throw new Exception($"Creating Elastic item _type = {accessor} Label = {item.Key} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
 
             }
         }
 
-        private StringBuilder getBulkJsonForItem(string accessor, string id, string label)
+        private static StringBuilder getBulkJsonForItem(string accessor, string id, string label)
         {
             //{ "create": { "_index": "website", "_type": "blog", "_id": "123" } }
             //{ "title":    "My first blog post" }
@@ -147,7 +133,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
             return ret;
         }
 
-        private void addItemsToIndex(string accessor, Dictionary<string, string> items)
+        private async Task addItemsToIndex(string accessor, Dictionary<string, string> items)
         {
             if (items != null && items.Count > 0)
             {
@@ -159,11 +145,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
                 {
                     client.BaseAddress = _elasticUrl;
-                    Task<HttpResponseMessage> response = Task.Run(async () =>
-                    {
-                        var r = await client.PostAsync("_bulk", content);
-                        return r;
-                    });
+                    var r = await client.PostAsync("_bulk", content);
 
                     //Success equals:
                     //HTTP200
@@ -174,14 +156,14 @@ namespace OntologyTypeAheadApi.Context.Implementation
                     //    {
                     //      ...
 
-                    if (response.Result.StatusCode != HttpStatusCode.OK)
-                        throw new Exception($"Creating Elastic items for _type = {accessor} did not return OK - {response.Result.StatusCode.ToString()} - {response.Result.Content.ToString()}");
+                    if (r.StatusCode != HttpStatusCode.OK)
+                        throw new Exception($"Creating Elastic items for _type = {accessor} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
 
                 }
             } 
         }
 
-        private int getCount(string accessor)
+        private async Task<int> getCount(string accessor)
         {
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
             {
@@ -189,18 +171,14 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 dynamic resp = null;
 
                 client.BaseAddress = _elasticUrl;
-                Task<HttpResponseMessage> response = Task.Run(async () =>
-                {
-                    var r = await client.GetAsync($"lookupitems/{accessor}/_count");
+                var r = await client.GetAsync($"lookupitems/{accessor}/_count");
 
-                    Stream stream = await r.Content.ReadAsStreamAsync();
-                    StreamReader readStream = new StreamReader(stream, Encoding.UTF8);
-                    string text = readStream.ReadToEnd();
+                Stream stream = await r.Content.ReadAsStreamAsync();
+                StreamReader readStream = new StreamReader(stream, Encoding.UTF8);
+                string text = readStream.ReadToEnd();
 
-                    resp = JsonConvert.DeserializeObject(text);
+                resp = JsonConvert.DeserializeObject(text);
 
-                    return r;
-                });
 
                 //Success equals:
                 //HTTP200
@@ -213,8 +191,8 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 //    }
                 //}
 
-                if (response.Result.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Creating Elastic items for _type = {accessor} did not return OK - {response.Result.StatusCode.ToString()} - {response.Result.Content.ToString()}");
+                if (r.StatusCode != HttpStatusCode.OK)
+                    throw new Exception($"Creating Elastic item count for _type = {accessor} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
 
                 count = resp.count;
 

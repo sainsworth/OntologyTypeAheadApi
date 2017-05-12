@@ -10,7 +10,7 @@ namespace OntologyTypeAheadApi.Service.Contract
 {
     public interface IDatastoreService
     {
-        IResponse<IEnumerable<LookupItem>> QueryDatastore_Contains(string accessor, string query);
-        IResponse PopulateDatastore();
+        Task<IResponse<IEnumerable<LookupItem>>> QueryDatastore_Contains(string accessor, string query);
+        Task<IResponse> PopulateDatastore();
     }
 }

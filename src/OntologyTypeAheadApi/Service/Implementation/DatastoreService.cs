@@ -8,6 +8,7 @@ using OntologyTypeAheadApi.Models.Response.DataResponse;
 using OntologyTypeAheadApi.Context.Contract;
 using OntologyTypeAheadApi.Helpers;
 using OntologyTypeAheadApi.Enums;
+using System.Threading.Tasks;
 
 namespace OntologyTypeAheadApi.Service.Implementation
 {
@@ -15,7 +16,7 @@ namespace OntologyTypeAheadApi.Service.Implementation
     {
         private IDatastoreContext _datastoreContext;
         private IRdfSourceContext _rdfSourceContext;
-        public IResponse<IEnumerable<LookupItem>> QueryDatastore_Contains(string accessor, string query)
+        public async Task<IResponse<IEnumerable<LookupItem>>> QueryDatastore_Contains(string accessor, string query)
         {
             var resp = new EnumerableResponse<LookupItem>();
             if (string.IsNullOrWhiteSpace(query))
@@ -24,7 +25,7 @@ namespace OntologyTypeAheadApi.Service.Implementation
             {
                 try
                 {
-                    var data = _datastoreContext.Contains(accessor, query);
+                    var data = await _datastoreContext.Contains(accessor, query);
                     if (data == null || (data != null && data.Count() == 0))
                         resp.Status = Enums.ResponseStatus.NoResponse;
                     else
@@ -43,7 +44,7 @@ namespace OntologyTypeAheadApi.Service.Implementation
             return resp;
         }
 
-        public IResponse PopulateDatastore()
+        public async Task<IResponse> PopulateDatastore()
         {
             var resp = new EmptyResponse();
             Dictionary<string,Dictionary<string, string>> data = new Dictionary<string,Dictionary<string, string>>();
@@ -56,7 +57,7 @@ namespace OntologyTypeAheadApi.Service.Implementation
 
                     data[x.Accessor] = items;
                 }
-                _datastoreContext.Populate(data);
+                await _datastoreContext.Populate(data);
                 resp.Status = ResponseStatus.DataLoaded;
             }
             catch (Exception e)

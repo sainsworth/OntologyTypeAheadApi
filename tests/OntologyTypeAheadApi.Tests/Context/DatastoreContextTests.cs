@@ -5,6 +5,7 @@ using OntologyTypeAheadApi.Context;
 using OntologyTypeAheadApi.Context.Implementation;
 using OntologyTypeAheadApi.Models.Response.DataResponse;
 using OntologyTypeAheadApi.Context.Contract;
+using System.Threading.Tasks;
 
 namespace OntologyTypeAheadApi.Tests.Context
 {
@@ -31,55 +32,55 @@ namespace OntologyTypeAheadApi.Tests.Context
         public static IDatastoreContext mock_context = new Mock_DatastoreContext(datastore);
 
         [TestMethod]
-        public void Mock_DatastoreContext_All()
+        public async Task Mock_DatastoreContext_All()
         {
-            var ret = mock_context.All("test");
+            var ret = await mock_context.All("test");
             Assert.AreEqual(6, ret.Count());
         }
 
         [TestMethod]
-        public void Mock_DatastoreContext_Equals()
+        public async Task Mock_DatastoreContext_Equals()
         {
-            var ret = mock_context.Equals("test","ONE");
+            var ret = await mock_context.Equals("test","ONE");
             Assert.AreEqual(1, ret.Count());
             Assert.AreEqual("One", ret.First().Label);
         }
 
         [TestMethod]
-        public void Mock_DatastoreContext_Equals_CaseSensitive()
+        public async Task Mock_DatastoreContext_Equals_CaseSensitive()
         {
-            var ret_cs = mock_context.Equals("test","ONE", true);
+            var ret_cs = await mock_context.Equals("test","ONE", true);
             Assert.AreEqual(null, ret_cs.FirstOrDefault());
         }
 
         [TestMethod]
-        public void Mock_DatastoreContext_StartsWith()
+        public async Task Mock_DatastoreContext_StartsWith()
         {
-            var ret = mock_context.StartsWith("test","FOUR").ToList();
+            var ret = (await mock_context.StartsWith("test","FOUR")).ToList();
             Assert.AreEqual(3, ret.Count());
             Assert.AreEqual("Four", ret.First().Label);
         }
 
         [TestMethod]
-        public void Mock_DatastoreContext_StartsWith_CaseSensitive()
+        public async Task Mock_DatastoreContext_StartsWith_CaseSensitive()
         {
-            var ret_cs = mock_context.StartsWith("test","FOUR", true);
+            var ret_cs = await mock_context.StartsWith("test","FOUR", true);
             Assert.AreEqual(1, ret_cs.Count());
             Assert.AreEqual("FOURTY", ret_cs.First().Label);
         }
 
         [TestMethod]
-        public void Mock_DatastoreContext_Contains()
+        public async Task Mock_DatastoreContext_Contains()
         {
-            var ret = mock_context.Contains("test","t").ToList();
+            var ret = (await mock_context.Contains("test","t")).ToList();
             Assert.AreEqual(4, ret.Count());
             Assert.AreEqual("Two", ret.First().Label);
         }
 
         [TestMethod]
-        public void Mock_DatastoreContext_Contains_CaseSensitive()
+        public async void Mock_DatastoreContext_Contains_CaseSensitive()
         {
-            var ret_cs = mock_context.Contains("test","t", true);
+            var ret_cs = await mock_context.Contains("test","t", true);
             Assert.AreEqual(1, ret_cs.Count());
             Assert.AreEqual("Fourty one", ret_cs.First().Label);
         }
