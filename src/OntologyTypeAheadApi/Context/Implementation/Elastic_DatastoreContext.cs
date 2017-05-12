@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
 using System.IO;
+using OntologyTypeAheadApi.Enums;
 
 namespace OntologyTypeAheadApi.Context.Implementation
 {
@@ -26,11 +27,14 @@ namespace OntologyTypeAheadApi.Context.Implementation
 
         public async Task<IEnumerable<LookupItem>> Contains(string accessor, string query, bool casesensitive = false)
         {
-            var count = getCount(accessor);
+            var count = await getCount(accessor);
 
-            //var responseData = 
-
-            throw new NotImplementedException();
+            if (count > 0)
+            {
+                return await queryElastic(accessor, count, 1, QueryType.Contains, false);
+            }
+            else
+                return null;
         }
 
         public async Task<IEnumerable<LookupItem>> Equals(string accessor, string query, bool casesensitive = false)
@@ -163,22 +167,23 @@ namespace OntologyTypeAheadApi.Context.Implementation
             } 
         }
 
+        private async Task<dynamic> readResponseContent(HttpContent content)
+        {
+            Stream stream = await content.ReadAsStreamAsync();
+            StreamReader readStream = new StreamReader(stream, Encoding.UTF8);
+            string text = readStream.ReadToEnd();
+
+            return JsonConvert.DeserializeObject(text);
+        }
+
         private async Task<int> getCount(string accessor)
         {
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
             {
-                int count = 0;
-                dynamic resp = null;
-
                 client.BaseAddress = _elasticUrl;
                 var r = await client.GetAsync($"lookupitems/{accessor}/_count");
 
-                Stream stream = await r.Content.ReadAsStreamAsync();
-                StreamReader readStream = new StreamReader(stream, Encoding.UTF8);
-                string text = readStream.ReadToEnd();
-
-                resp = JsonConvert.DeserializeObject(text);
-
+                dynamic resp = await readResponseContent(r.Content);
 
                 //Success equals:
                 //HTTP200
@@ -194,9 +199,43 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 if (r.StatusCode != HttpStatusCode.OK)
                     throw new Exception($"Creating Elastic item count for _type = {accessor} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
 
-                count = resp.count;
+                return resp.count;
+            }
+        }
 
-                return count;
+        private async Task<IEnumerable<LookupItem>> queryElastic(string accessor, int pageSize, int page, QueryType type, bool caseSensitive)
+        {
+            var query =
+                new {
+                    query = new {
+                        match_all = new { }
+                    },
+                    from = pageSize * (page - 1),
+                    size = pageSize
+                };
+
+            var queryJson = JsonConvert.SerializeObject(query, Formatting.None);
+
+            using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
+            {
+                client.BaseAddress = _elasticUrl;
+                var content = new StringContent(queryJson, Encoding.UTF8, "application/json");
+                var r = await client.PostAsync($"lookupitems/{accessor}/_search", content);
+
+                if (r.StatusCode != HttpStatusCode.OK)
+                    throw new Exception($"Querying Elastic on lookupitems/{accessor}/_count with {queryJson} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
+
+                dynamic resp = await readResponseContent(r.Content);
+                List<LookupItem> ret = new List<LookupItem>();
+                if (resp.hits != null)
+                {
+                    ((IEnumerable<dynamic>)resp.hits.hits).ToList().ForEach(x =>
+                    {
+                        ret.Add(new LookupItem(x._id.ToString(), x._source.Label.ToString()));
+                    });
+                }
+
+                return ret.Count > 0 ? ret : null;
             }
         }
     }

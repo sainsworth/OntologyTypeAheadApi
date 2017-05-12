@@ -193,6 +193,7 @@
     <Compile Include="Context\Implementation\Mock_RdfSourceContext.cs" />
     <Compile Include="Controllers\LookupController.cs" />
     <Compile Include="Controllers\ManagementController.cs" />
+    <Compile Include="Enums\QueryType.cs" />
     <Compile Include="Enums\RdfSource.cs" />
     <Compile Include="Enums\RdfType.cs" />
     <Compile Include="Enums\ResponseStatus.cs" />
