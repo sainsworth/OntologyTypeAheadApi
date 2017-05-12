@@ -31,7 +31,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
 
             if (count > 0)
             {
-                return await queryElastic(accessor, count, 1, QueryType.Contains, false);
+                return await queryElastic(accessor, count, 1, QueryType.Contains, query);
             }
             else
                 return null;
@@ -203,18 +203,33 @@ namespace OntologyTypeAheadApi.Context.Implementation
             }
         }
 
-        private async Task<IEnumerable<LookupItem>> queryElastic(string accessor, int pageSize, int page, QueryType type, bool caseSensitive)
+        private async Task<IEnumerable<LookupItem>> queryElastic(string accessor, int pageSize, int page, QueryType type, string query, bool caseSensitive=false)
         {
-            var query =
-                new {
-                    query = new {
-                        match_all = new { }
-                    },
+
+            dynamic q = null;
+            switch (type)
+            {
+                case QueryType.All:
+                    q = new { match_all = new { } };
+                    break;
+                case QueryType.Contains:
+                    q = new { match_phrase = new { Label = query } };
+                    break;
+                case QueryType.Exact:
+                    break;
+                case QueryType.StartsWith:
+                    break;
+            }
+
+            var elasticQuery =
+                new
+                {
+                    query = q,
                     from = pageSize * (page - 1),
                     size = pageSize
                 };
 
-            var queryJson = JsonConvert.SerializeObject(query, Formatting.None);
+            var queryJson = JsonConvert.SerializeObject(elasticQuery, Formatting.None);
 
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
             {

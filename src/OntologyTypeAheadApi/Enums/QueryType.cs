@@ -9,6 +9,7 @@ namespace OntologyTypeAheadApi.Enums
     {
         Exact,
         StartsWith,
-        Contains
+        Contains,
+        All
     }
 }
