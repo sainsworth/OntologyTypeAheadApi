@@ -9,6 +9,8 @@ using System.Net;
 using Newtonsoft.Json;
 using System.Text;
 using OntologyTypeAheadApi.Models.Response.Envelope;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace OntologyTypeAheadApi.Helpers
 {
@@ -34,27 +36,14 @@ namespace OntologyTypeAheadApi.Helpers
                     return ret;
             }
         }
+
+        public static async Task<dynamic> ReadResponseContent(HttpContent content)
+        {
+            Stream stream = await content.ReadAsStreamAsync();
+            StreamReader readStream = new StreamReader(stream, Encoding.UTF8);
+            string text = readStream.ReadToEnd();
+
+            return JsonConvert.DeserializeObject(text);
+        }
     }
-
-    //public static class HttpResponseHelper<T>
-    //{
-    //    public static HttpResponseMessage StandardiseResponse(IRequest request, IResponse<T> response)
-    //    {
-    //        var resp = new ResponseEnvelope<T>(request, response);
-    //        var ret = new HttpResponseMessage(HttpStatusCode.OK);
-    //        var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-
-    //        ret.Content = new StringContent(JsonConvert.SerializeObject(resp, Formatting.None, settings).ToString(), Encoding.UTF8, "application/json");
-    //        switch (response.Status)
-    //        {
-    //            case ResponseStatus.OK:
-    //            case ResponseStatus.NoResponse:
-    //                return ret;
-    //            case ResponseStatus.InvalidRequest:
-    //            default:
-    //                ret.StatusCode = HttpStatusCode.BadRequest;
-    //                return ret;
-    //        }
-    //    }
-    //}
 }

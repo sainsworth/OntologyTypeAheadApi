@@ -27,6 +27,20 @@ namespace OntologyTypeAheadApi.Controllers
             return HttpResponseHelper.StandardiseResponse(request, response);
         }
 
+        [HttpGet]
+        [Route("lookup/{accessor}/all")]
+        public async Task<HttpResponseMessage> LookupAll(string accessor)
+        {
+            var request = new ConformedRequest()
+            {
+                Route = "lookup/{accessor}/all",
+                Details = new { Accessor = accessor }
+            };
+            var response = await _datastoreService.QueryDatastore_All(accessor);
+
+            return HttpResponseHelper.StandardiseResponse(request, response);
+        }
+
         public LookupController(IDatastoreService datastoreService)
         {
             _datastoreService = datastoreService;

@@ -17,7 +17,7 @@
     <AssemblyName>OntologyTypeAheadApi</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -191,6 +191,7 @@
     <Compile Include="Context\Implementation\Elastic_DatastoreContext.cs" />
     <Compile Include="Context\Implementation\Mock_DatastoreContext.cs" />
     <Compile Include="Context\Implementation\Mock_RdfSourceContext.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\LookupController.cs" />
     <Compile Include="Controllers\ManagementController.cs" />
     <Compile Include="Enums\QueryType.cs" />
@@ -201,11 +202,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ElasticHelper.cs" />
     <Compile Include="Helpers\HttpResponseHelper.cs" />
     <Compile Include="Helpers\RdfHelper.cs" />
     <Compile Include="Models\Contract\IRequest.cs" />
     <Compile Include="Models\Contract\IResponse.cs" />
     <Compile Include="Models\Request\ConformedRequest.cs" />
+    <Compile Include="Models\Request\ElasticQuery.cs" />
     <Compile Include="Models\Response\DataResponse\Ontology.cs" />
     <Compile Include="Models\Response\EmptyResponse.cs" />
     <Compile Include="Models\Response\EnumerableResponse.cs" />
@@ -255,7 +258,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>49185</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:48751/</IISUrl>
+          <IISUrl>http://ontologytypeahead.csharp</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

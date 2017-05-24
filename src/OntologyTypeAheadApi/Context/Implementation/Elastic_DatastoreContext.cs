@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using System.Text;
 using System.IO;
 using OntologyTypeAheadApi.Enums;
+using OntologyTypeAheadApi.Helpers;
 
 namespace OntologyTypeAheadApi.Context.Implementation
 {
@@ -18,38 +19,29 @@ namespace OntologyTypeAheadApi.Context.Implementation
     {
         //https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started.html
 
+        #region private properties
         private Uri _elasticUrl;
+        #endregion
 
+        #region public methods
         public async Task<IEnumerable<LookupItem>> All(string accessor)
         {
-            throw new NotImplementedException();
+            return await elasticQuery(accessor, QueryType.All);
         }
 
         public async Task<IEnumerable<LookupItem>> Contains(string accessor, string query, bool casesensitive = false)
         {
-            var count = await getCount(accessor);
-
-            if (count > 0)
-            {
-                return await queryElastic(accessor, count, 1, QueryType.Contains, query);
-            }
-            else
-                return null;
+            return await elasticQuery(accessor, QueryType.Contains, query, casesensitive);
         }
 
         public async Task<IEnumerable<LookupItem>> Equals(string accessor, string query, bool casesensitive = false)
         {
-            throw new NotImplementedException();
+            return await elasticQuery(accessor, QueryType.Exact, query, casesensitive);
         }
 
         public async Task<IEnumerable<LookupItem>> StartsWith(string accessor, string query, bool casesensitive = false)
         {
-            throw new NotImplementedException();
-        }
-
-        public Elastic_DatastoreContext(string elasticUrl)
-        {
-            _elasticUrl = new Uri(elasticUrl);
+            return await elasticQuery(accessor, QueryType.StartsWith, query, casesensitive);
         }
 
         public async Task Populate(Dictionary<string, Dictionary<string, string>> data)
@@ -62,6 +54,47 @@ namespace OntologyTypeAheadApi.Context.Implementation
             }
 
         }
+        #endregion
+
+        #region constructors
+        public Elastic_DatastoreContext(string elasticUrl)
+        {
+            _elasticUrl = new Uri(elasticUrl);
+        }
+        #endregion
+
+        #region private methods
+        #region query data#
+        /// <summary>
+        /// Will run the query on elastic
+        /// then compensate for Elastic being case insensitive and doing by words
+        /// </summary>
+        /// <param name="accessor">the document type in the index</param>
+        /// <param name="type">Query type</param>
+        /// <param name="query">Query string</param>
+        /// <param name="casesensitive"></param>
+        /// <returns></returns>
+        private async Task<IEnumerable<LookupItem>> elasticQuery(string accessor, QueryType type, string query = "", bool casesensitive = false)
+        {
+            var count = await getCount(accessor);
+
+            if (count > 0)
+            {
+                var elasticData = await queryElastic(accessor, count, 1, type, query);
+                if (type == QueryType.All || elasticData == null || elasticData.Count() == 0)
+                    return elasticData;
+                if (casesensitive)
+                    elasticData = elasticData.Where(x => x.Label.Replace("-"," ").Contains(query.Replace("-", " "))).ToList();
+                else
+                    elasticData = elasticData.Where(x => x.Label.Replace("-", " ").ToLowerInvariant().Contains(query.Replace("-", " ").ToLowerInvariant())).ToList();
+                return elasticData;
+            }
+            else
+                return null;
+        }
+        #endregion
+
+        #region manage data
         private async Task trashAllData()
         {
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
@@ -97,8 +130,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
                     throw new Exception($"Creating Elastic Index {indexName} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
             }
         }
-
-        // uses our Id as the elastic Id
+        
         private async Task addItemToIndex(string accessor, KeyValuePair<string, string> item)
         {
             var data = new { Label = item.Value };
@@ -167,15 +199,6 @@ namespace OntologyTypeAheadApi.Context.Implementation
             } 
         }
 
-        private async Task<dynamic> readResponseContent(HttpContent content)
-        {
-            Stream stream = await content.ReadAsStreamAsync();
-            StreamReader readStream = new StreamReader(stream, Encoding.UTF8);
-            string text = readStream.ReadToEnd();
-
-            return JsonConvert.DeserializeObject(text);
-        }
-
         private async Task<int> getCount(string accessor)
         {
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
@@ -183,7 +206,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 client.BaseAddress = _elasticUrl;
                 var r = await client.GetAsync($"lookupitems/{accessor}/_count");
 
-                dynamic resp = await readResponseContent(r.Content);
+                dynamic resp = await HttpResponseHelper.ReadResponseContent(r.Content);
 
                 //Success equals:
                 //HTTP200
@@ -203,33 +226,9 @@ namespace OntologyTypeAheadApi.Context.Implementation
             }
         }
 
-        private async Task<IEnumerable<LookupItem>> queryElastic(string accessor, int pageSize, int page, QueryType type, string query, bool caseSensitive=false)
+        private async Task<IEnumerable<LookupItem>> queryElastic(string accessor, int pageSize, int page, QueryType type, string query, bool caseSensitive = false)
         {
-
-            dynamic q = null;
-            switch (type)
-            {
-                case QueryType.All:
-                    q = new { match_all = new { } };
-                    break;
-                case QueryType.Contains:
-                    q = new { match_phrase = new { Label = query } };
-                    break;
-                case QueryType.Exact:
-                    break;
-                case QueryType.StartsWith:
-                    break;
-            }
-
-            var elasticQuery =
-                new
-                {
-                    query = q,
-                    from = pageSize * (page - 1),
-                    size = pageSize
-                };
-
-            var queryJson = JsonConvert.SerializeObject(elasticQuery, Formatting.None);
+            var queryJson = ElasticHelper.GetQueryJson(pageSize, page, type, query);
 
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
             {
@@ -240,7 +239,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 if (r.StatusCode != HttpStatusCode.OK)
                     throw new Exception($"Querying Elastic on lookupitems/{accessor}/_count with {queryJson} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
 
-                dynamic resp = await readResponseContent(r.Content);
+                dynamic resp = await HttpResponseHelper.ReadResponseContent(r.Content);
                 List<LookupItem> ret = new List<LookupItem>();
                 if (resp.hits != null)
                 {
@@ -253,5 +252,8 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 return ret.Count > 0 ? ret : null;
             }
         }
+
+        #endregion
+        #endregion
     }
 }

@@ -11,6 +11,7 @@ namespace OntologyTypeAheadApi.Service.Contract
     public interface IDatastoreService
     {
         Task<IResponse<IEnumerable<LookupItem>>> QueryDatastore_Contains(string accessor, string query);
+        Task<IResponse<IEnumerable<LookupItem>>> QueryDatastore_All(string accessor);
         Task<IResponse> PopulateDatastore();
     }
 }

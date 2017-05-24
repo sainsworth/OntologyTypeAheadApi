@@ -24,5 +24,32 @@ namespace OntologyTypeAheadApi.Extensions
             if (StripSpaces) s = s.Replace(" ", "");
             return s;
         }
+
+        public static string ElasticQueryStringEscaped(this string s)
+        {
+            s = s.Replace("\\", "\\\\");
+            var replaceList = new List<string>() {
+                "+"
+                , "-"
+                , "!"
+                , "("
+                , ")"
+                , ":"
+                , "^"
+                , "["
+                , "]"
+                , "\""
+                , "{"
+                , "}"
+                , "~"
+                , "*"
+                , "?"
+                , "|"
+                , "&"
+                , "/"
+            };
+            replaceList.ForEach(x => s = s.Replace(x, $"\\{x}"));
+            return s;
+        }
     }
 }

@@ -44,6 +44,29 @@ namespace OntologyTypeAheadApi.Service.Implementation
             return resp;
         }
 
+        public async Task<IResponse<IEnumerable<LookupItem>>> QueryDatastore_All(string accessor)
+        {
+            var resp = new EnumerableResponse<LookupItem>();
+            try
+            {
+                var data = await _datastoreContext.All(accessor);
+                if (data == null || (data != null && data.Count() == 0))
+                    resp.Status = Enums.ResponseStatus.NoResponse;
+                else
+                {
+                    resp.Data = data.OrderBy(x => x.Label);
+                    resp.Status = Enums.ResponseStatus.OK;
+                }
+            }
+            catch (Exception e)
+            {
+                resp.Status = Enums.ResponseStatus.Error;
+                resp.Exception = e;
+            }
+
+            return resp;
+        }
+
         public async Task<IResponse> PopulateDatastore()
         {
             var resp = new EmptyResponse();
