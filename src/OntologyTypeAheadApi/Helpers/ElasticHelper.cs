@@ -50,7 +50,7 @@ namespace OntologyTypeAheadApi.Helpers
         {
             var words = query
                             .Replace("-"," ")
-                            .ElasticQueryStringEscaped()
+                            .ElasticEscaped()
                             .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             var queryString = words[0];

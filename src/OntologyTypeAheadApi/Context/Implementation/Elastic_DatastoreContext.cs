@@ -44,13 +44,14 @@ namespace OntologyTypeAheadApi.Context.Implementation
             return await elasticQuery(accessor, QueryType.StartsWith, query, casesensitive);
         }
 
-        public async Task Populate(Dictionary<string, Dictionary<string, string>> data)
+        public async Task Populate(Dictionary<string, string> accessors, Dictionary<string, Dictionary<string, string>> data)
         {
             await trashAllData();
+            await addItemsToLookupIndex("accessors", accessors);
 
             foreach (var x in data)
             {
-                await addItemsToIndex(x.Key, x.Value);
+                await addItemsToLookupIndex(x.Key, x.Value);
             }
 
         }
@@ -164,17 +165,17 @@ namespace OntologyTypeAheadApi.Context.Implementation
             var json1 = JsonConvert.SerializeObject(data1, Formatting.None);
             var json2 = JsonConvert.SerializeObject(data2, Formatting.None);
 
-            var ret = new StringBuilder(json1).Append(Environment.NewLine).Append(json2);
+            var ret = new StringBuilder(json1).Append(Environment.NewLine).Append(json2).Append(Environment.NewLine);
 
             return ret;
         }
 
-        private async Task addItemsToIndex(string accessor, Dictionary<string, string> items)
+        private async Task addItemsToLookupIndex(string accessor, Dictionary<string, string> items)
         {
             if (items != null && items.Count > 0)
             {
                 var datasb = getBulkJsonForItem(accessor, items.ToList()[0].Key, items.ToList()[0].Value);
-                items.ToList().Skip(1).ToList().ForEach(x => datasb.Append(Environment.NewLine).Append(getBulkJsonForItem(accessor, x.Key, x.Value)));
+                items.ToList().Skip(1).ToList().ForEach(x => datasb.Append(getBulkJsonForItem(accessor, x.Key, x.Value)));
 
                 var xx = datasb.ToString();
                 var content = new StringContent(datasb.ToString(), Encoding.UTF8, "application/json");

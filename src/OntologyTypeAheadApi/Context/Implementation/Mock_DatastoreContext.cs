@@ -12,6 +12,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
     public class Mock_DatastoreContext : IDatastoreContext
     {
         private Dictionary<string,IEnumerable<LookupItem>> _data;
+        private Dictionary<string, string> _accessors;
 
         public Mock_DatastoreContext()
         {
@@ -113,10 +114,10 @@ namespace OntologyTypeAheadApi.Context.Implementation
             return ret;
         }
 
-        public async Task Populate(Dictionary<string, Dictionary<string, string>> data)
+        public async Task Populate(Dictionary<string, string> accessors, Dictionary<string, Dictionary<string, string>> data)
         {
             _data = new Dictionary<string, IEnumerable<LookupItem>>();
-
+            _accessors = accessors;
             foreach (var d in data)
             {
                 var thisdata = new List<LookupItem>();

@@ -70,17 +70,19 @@ namespace OntologyTypeAheadApi.Service.Implementation
         public async Task<IResponse> PopulateDatastore()
         {
             var resp = new EmptyResponse();
+            var accessors = new Dictionary<string, string>();
             Dictionary<string,Dictionary<string, string>> data = new Dictionary<string,Dictionary<string, string>>();
             try
             {
                 foreach (var x in _rdfSourceContext.All())
                 {
+                    accessors[x.Accessor] = x.Label;
                     var graph = RdfHelper.GetGraphFromOntology(x);
                     var items = RdfHelper.GetFlatDataFromGraph(x.RootTypes, graph);
 
                     data[x.Accessor] = items;
                 }
-                await _datastoreContext.Populate(data);
+                await _datastoreContext.Populate(accessors, data);
                 resp.Status = ResponseStatus.DataLoaded;
             }
             catch (Exception e)

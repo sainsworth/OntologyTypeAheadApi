@@ -25,7 +25,7 @@ namespace OntologyTypeAheadApi.Extensions
             return s;
         }
 
-        public static string ElasticQueryStringEscaped(this string s)
+        public static string ElasticEscaped(this string s)
         {
             s = s.Replace("\\", "\\\\");
             var replaceList = new List<string>() {
