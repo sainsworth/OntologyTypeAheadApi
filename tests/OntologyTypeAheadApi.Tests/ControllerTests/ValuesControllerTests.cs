@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OntologyTypeAheadApi.Controllers;
 
-namespace OntologyTypeAheadApi.Tests.Controllers
+namespace OntologyTypeAheadApi.Tests.ControllerTests
 {
     //[TestClass]
     //public class ValuesControllerTest

@@ -65,6 +65,7 @@ namespace OntologyTypeAheadApi.Tests.HelperTests
             var ontology = new Ontology(
                                testTtl,
                                "test",
+                               "Test Label",
                                new List<string>() { "http://www.stew.test.uk/ontologytypeaheadapi/root" },
                                RdfSource.String, RdfType.TTL
                            );
