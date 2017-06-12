@@ -20,6 +20,13 @@ namespace OntologyTypeAheadApi.Context.Implementation
                     "Towns starting with A",
                     new List<string>() { "http://www.stew.test.uk/dummy_ontology/Starts_with_A"},
                     RdfSource.File,
+                    RdfType.TTL),
+                new Ontology(
+                    Path.Combine(HttpContext.Current.Request.PhysicalApplicationPath,@"App_Data\TownsStartingB_Ontology.ttl"),
+                    "B_towns",
+                    "Towns starting with B",
+                    new List<string>() { "http://www.stew.test.uk/dummy_ontology/Starts_with_B"},
+                    RdfSource.File,
                     RdfType.TTL)
             };
         }

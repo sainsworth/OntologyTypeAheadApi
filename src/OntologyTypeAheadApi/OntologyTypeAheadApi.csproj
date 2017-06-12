@@ -217,7 +217,9 @@
     <Compile Include="Models\Contract\IResponse.cs" />
     <Compile Include="Models\Request\ConformedRequest.cs" />
     <Compile Include="Models\Request\ElasticQuery.cs" />
+    <Compile Include="Models\Response\DataResponse\LoadOntologyResponse.cs" />
     <Compile Include="Models\Response\DataResponse\Ontology.cs" />
+    <Compile Include="Models\Response\DataResponse\ReponseStatus.cs" />
     <Compile Include="Models\Response\EmptyResponse.cs" />
     <Compile Include="Models\Response\EnumerableResponse.cs" />
     <Compile Include="Models\Response\DataResponse\LookupItem.cs" />

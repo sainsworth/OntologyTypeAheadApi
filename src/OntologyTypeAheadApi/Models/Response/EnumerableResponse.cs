@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using OntologyTypeAheadApi.Enums;
 using OntologyTypeAheadApi.Models.Contract;
 using System;
@@ -11,10 +12,19 @@ namespace OntologyTypeAheadApi.Models.Response
     public class EnumerableResponse<T> :IResponse<IEnumerable<T>>
     {
         #region public properties
-
-        public IEnumerable<T> Data { get; set; }
-        [JsonIgnore]
+        [JsonConverter(typeof(StringEnumConverter))]
         public ResponseStatus Status { get; set; }
+        public string Message { get; set; }
+        [JsonProperty(PropertyName = "Exception")]
+        public string ExceptionMessage {
+            get
+            {
+                if (_innerException != null)
+                    return _innerException.Message;
+                return null;
+            }
+        }
+        public IEnumerable<T> Data { get; set; }
         [JsonIgnore]
         private Exception _exception;
         [JsonIgnore]
@@ -40,7 +50,6 @@ namespace OntologyTypeAheadApi.Models.Response
                 }
             }
         }
-        
         private Exception _innerException;
         [JsonIgnore]
         public Exception InnerException { get
@@ -48,16 +57,6 @@ namespace OntologyTypeAheadApi.Models.Response
                 return _innerException;
             }
         }
-        [JsonProperty(PropertyName = "Exception")]
-        public string ExceptionMessage {
-            get
-            {
-                if (_innerException != null)
-                    return _innerException.Message;
-                return null;
-            }
-        }
-        public string Message { get; set; }
         #endregion
 
         #region constructors

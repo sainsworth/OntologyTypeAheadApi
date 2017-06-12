@@ -69,28 +69,42 @@ namespace OntologyTypeAheadApi.Service.Implementation
 
         public async Task<IResponse> PopulateDatastore()
         {
-            var resp = new EmptyResponse();
+            var resp = new EnumerableResponse<dynamic>();
             var accessors = new Dictionary<string, string>();
+            var r = new List<LoadOntologyResponse>();
+
             Dictionary<string,Dictionary<string, string>> data = new Dictionary<string,Dictionary<string, string>>();
             try
             {
-                foreach (var x in _rdfSourceContext.All())
+                var finalStatus = ResponseStatus.DataLoaded;
+                var d = _rdfSourceContext.All();
+                foreach (var x in d)
                 {
-                    accessors[x.Accessor] = x.Label;
-                    var graph = RdfHelper.GetGraphFromOntology(x);
-                    var items = RdfHelper.GetFlatDataFromGraph(x.RootTypes, graph);
+                    try
+                    {
+                        accessors[x.Accessor] = x.Label;
+                        var graph = RdfHelper.GetGraphFromOntology(x);
+                        var items = RdfHelper.GetFlatDataFromGraph(x.RootTypes, graph);
 
-                    data[x.Accessor] = items;
+                        data[x.Accessor] = items;
+                        r.Add(new LoadOntologyResponse(x.Location));
+                    }
+                    catch (Exception e)
+                    {
+                        r.Add(new LoadOntologyResponse(x.Location, ResponseStatus.Error, e));
+                        finalStatus = ResponseStatus.Error;
+                        resp.Message = "One or more ontologies could not be loaded";
+                    }
                 }
                 await _datastoreContext.Populate(accessors, data);
-                resp.Status = ResponseStatus.DataLoaded;
+                resp.Status = finalStatus;
             }
             catch (Exception e)
             {
                 resp.Status = Enums.ResponseStatus.Error;
                 resp.Exception = e;
             }
-
+            resp.Data = r;
             return resp;
         }
 
