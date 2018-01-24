@@ -11,7 +11,7 @@ namespace OntologyTypeAheadApi.Controllers
 {
     public class LookupController : ApiController
     {
-        private readonly IDatastoreService _datastoreService;
+        private readonly IQueryService _datastoreService;
 
         [HttpGet]
         [Route("lookup/{accessor}/")]
@@ -41,7 +41,7 @@ namespace OntologyTypeAheadApi.Controllers
             return HttpResponseHelper.StandardiseResponse(request, response);
         }
 
-        public LookupController(IDatastoreService datastoreService)
+        public LookupController(IQueryService datastoreService)
         {
             _datastoreService = datastoreService;
         }

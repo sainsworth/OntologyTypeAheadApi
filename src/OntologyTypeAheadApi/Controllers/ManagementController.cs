@@ -17,7 +17,7 @@ namespace OntologyTypeAheadApi.Controllers
 {
     public class ManagementController : ApiController
     {
-        private readonly IDatastoreService _datastoreService;
+        private readonly IPopulateService _populateService;
 
         [HttpGet]
         [Route("management/populate")]
@@ -27,14 +27,14 @@ namespace OntologyTypeAheadApi.Controllers
             {
                 Route = "management/populate",
             };
-            var response = await _datastoreService.PopulateDatastore();
+            var response = await _populateService.PopulateDatastore();
 
             return HttpResponseHelper.StandardiseResponse(request, response);
         }
 
-        public ManagementController(IDatastoreService datastoreService)
+        public ManagementController(IPopulateService populateService)
         {
-            _datastoreService = datastoreService;
+            _populateService = populateService;
         }
     }
 }

@@ -12,10 +12,10 @@ using System.Threading.Tasks;
 
 namespace OntologyTypeAheadApi.Service.Implementation
 {
-    public class DatastoreService : IDatastoreService
+    public class QueryService : IQueryService
     {
         private IDatastoreContext _datastoreContext;
-        private IRdfSourceContext _rdfSourceContext;
+
         public async Task<IResponse<IEnumerable<LookupItem>>> QueryDatastore_Contains(string accessor, string query)
         {
             var resp = new EnumerableResponse<LookupItem>();
@@ -67,51 +67,10 @@ namespace OntologyTypeAheadApi.Service.Implementation
             return resp;
         }
 
-        public async Task<IResponse> PopulateDatastore()
-        {
-            var resp = new EnumerableResponse<dynamic>();
-            var accessors = new Dictionary<string, string>();
-            var r = new List<LoadOntologyResponse>();
-
-            Dictionary<string,Dictionary<string, string>> data = new Dictionary<string,Dictionary<string, string>>();
-            try
-            {
-                var finalStatus = ResponseStatus.DataLoaded;
-                var d = _rdfSourceContext.All();
-                foreach (var x in d)
-                {
-                    try
-                    {
-                        accessors[x.Accessor] = x.Label;
-                        var graph = RdfHelper.GetGraphFromOntology(x);
-                        var items = RdfHelper.GetFlatDataFromGraph(x.RootTypes, graph);
-
-                        data[x.Accessor] = items;
-                        r.Add(new LoadOntologyResponse(x.Location));
-                    }
-                    catch (Exception e)
-                    {
-                        r.Add(new LoadOntologyResponse(x.Location, ResponseStatus.Error, e));
-                        finalStatus = ResponseStatus.Error;
-                        resp.Message = "One or more ontologies could not be loaded";
-                    }
-                }
-                await _datastoreContext.Populate(accessors, data);
-                resp.Status = finalStatus;
-            }
-            catch (Exception e)
-            {
-                resp.Status = Enums.ResponseStatus.Error;
-                resp.Exception = e;
-            }
-            resp.Data = r;
-            return resp;
-        }
-
-        public DatastoreService(IDatastoreContext datastoreContext, IRdfSourceContext rdfSourceContext)
+       
+        public QueryService(IDatastoreContext datastoreContext, IRdfSourceContext rdfSourceContext)
         {
             _datastoreContext = datastoreContext;
-            _rdfSourceContext = rdfSourceContext;
         }
     }
 }

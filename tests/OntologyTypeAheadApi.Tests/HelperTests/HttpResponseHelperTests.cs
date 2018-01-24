@@ -28,7 +28,7 @@ namespace OntologyTypeAheadApi.Tests.Helpers
             var result = HttpResponseHelper.StandardiseResponse(request, response);
 
             Assert.AreEqual(System.Net.HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(@"{""Request"":{""Route"":""test route"",""Details"":""test details""},""Response"":{""Data"":[""test data""]}}", result.Content.ReadAsStringAsync().Result);
+            Assert.AreEqual(@"{""Request"":{""Route"":""test route"",""Details"":""test details""},""Response"":{""Status"":""OK"",""Data"":[""test data""]}}", result.Content.ReadAsStringAsync().Result);
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace OntologyTypeAheadApi.Tests.Helpers
             var result = HttpResponseHelper.StandardiseResponse(request, response);
 
             Assert.AreEqual(System.Net.HttpStatusCode.OK, result.StatusCode);
-            Assert.AreEqual(@"{""Request"":{""Route"":""test route"",""Details"":""test details""},""Response"":{}}", result.Content.ReadAsStringAsync().Result);
+            Assert.AreEqual(@"{""Request"":{""Route"":""test route"",""Details"":""test details""},""Response"":{""Status"":""NoResponse""}}", result.Content.ReadAsStringAsync().Result);
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace OntologyTypeAheadApi.Tests.Helpers
             var result = HttpResponseHelper.StandardiseResponse(request, response);
 
             Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
-            Assert.AreEqual(@"{""Request"":{""Route"":""test route"",""Details"":""test details""},""Response"":{""Message"":""invalid""}}", result.Content.ReadAsStringAsync().Result);
+            Assert.AreEqual(@"{""Request"":{""Route"":""test route"",""Details"":""test details""},""Response"":{""Status"":""InvalidRequest"",""Message"":""invalid""}}", result.Content.ReadAsStringAsync().Result);
         }
 
         [TestMethod]
@@ -75,7 +75,7 @@ namespace OntologyTypeAheadApi.Tests.Helpers
             var result = HttpResponseHelper.StandardiseResponse(request, response);
 
             Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
-            Assert.AreEqual(@"{""Request"":{""Route"":""test route"",""Details"":""test details""},""Response"":{""Exception"":""inner""}}", result.Content.ReadAsStringAsync().Result);
+            Assert.AreEqual(@"{""Request"":{""Route"":""test route"",""Details"":""test details""},""Response"":{""Status"":""Error"",""Exception"":""inner""}}", result.Content.ReadAsStringAsync().Result);
         }
     }
 }

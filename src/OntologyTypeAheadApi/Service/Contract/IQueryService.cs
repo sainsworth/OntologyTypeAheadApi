@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace OntologyTypeAheadApi.Service.Contract
 {
-    public interface IDatastoreService
+    public interface IQueryService
     {
         Task<IResponse<IEnumerable<LookupItem>>> QueryDatastore_Contains(string accessor, string query);
         Task<IResponse<IEnumerable<LookupItem>>> QueryDatastore_All(string accessor);
-        Task<IResponse> PopulateDatastore();
     }
 }

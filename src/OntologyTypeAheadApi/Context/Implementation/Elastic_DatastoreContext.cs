@@ -156,11 +156,13 @@ namespace OntologyTypeAheadApi.Context.Implementation
 
         private static StringBuilder getBulkJsonForItem(string accessor, string id, string label)
         {
-            //{ "create": { "_index": "website", "_type": "blog", "_id": "123" } }
-            //{ "title":    "My first blog post" }
+            //{ "create":{ "_index":"accessors","_type":"accessors","_id":"a_towns"} }
+            //{ "doc" : { "Label":"Towns starting with A"} }
+            //{ "create":{ "_index":"a_towns","_type":"a_towns","_id":"http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston"} }
+            //{ "doc" : { "Label":"Abingdon to Alston"} }
 
-            var data1 = new { create = new { _index = "lookupitems", _type = accessor.ToLowerInvariant(), _id = id } };
-            var data2 = new { Label = label };
+            var data1 = new { create = new { _index = accessor.ToLowerInvariant(), _type = accessor.ToLowerInvariant(), _id = id } };
+            var data2 = new { doc = new { Label = label } };
 
             var json1 = JsonConvert.SerializeObject(data1, Formatting.None);
             var json2 = JsonConvert.SerializeObject(data2, Formatting.None);
@@ -205,7 +207,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
             {
                 client.BaseAddress = _elasticUrl;
-                var r = await client.GetAsync($"lookupitems/{accessor}/_count");
+                var r = await client.GetAsync($"{accessor}/_count");
 
                 dynamic resp = await HttpResponseHelper.ReadResponseContent(r.Content);
 
@@ -235,10 +237,40 @@ namespace OntologyTypeAheadApi.Context.Implementation
             {
                 client.BaseAddress = _elasticUrl;
                 var content = new StringContent(queryJson, Encoding.UTF8, "application/json");
-                var r = await client.PostAsync($"lookupitems/{accessor}/_search", content);
+                var r = await client.PostAsync($"{accessor}/_search", content);
+
+                //Success equals:
+                //HTTP200
+                //{
+                //    "took":3,
+                //    "timed_out":false,
+                //    "_shards":{
+                //        "total":5,
+                //        "successful":5,
+                //        "skipped":0,
+                //        "failed":0
+                //    },
+                //    "hits":{
+                //        "total":1,
+                //        "max_score":1.0,
+                //        "hits":[
+                //            {
+                //                "_index":"accessors",
+                //                "_type":"accessors",
+                //                "_id":"a_towns",
+                //                "_score":1.0,
+                //                "_source":{
+                //                    "doc":{
+                //                        "Label":"Towns starting with A"
+                //                    }
+                //                }
+                //            }
+                //        ]
+                //    }
+                //}
 
                 if (r.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Querying Elastic on lookupitems/{accessor}/_count with {queryJson} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
+                    throw new Exception($"Querying Elastic on {accessor}/_count with {queryJson} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
 
                 dynamic resp = await HttpResponseHelper.ReadResponseContent(r.Content);
                 List<LookupItem> ret = new List<LookupItem>();
@@ -246,7 +278,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 {
                     ((IEnumerable<dynamic>)resp.hits.hits).ToList().ForEach(x =>
                     {
-                        ret.Add(new LookupItem(x._id.ToString(), x._source.Label.ToString()));
+                        ret.Add(new LookupItem(x._id.ToString(), x._source.doc.Label.ToString()));
                     });
                 }
 

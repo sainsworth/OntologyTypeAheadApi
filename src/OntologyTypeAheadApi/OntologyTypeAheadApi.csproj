@@ -225,8 +225,10 @@
     <Compile Include="Models\Response\DataResponse\LookupItem.cs" />
     <Compile Include="Models\Response\Envelope\ResponseEnvelope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\Contract\IDatastoreService.cs" />
-    <Compile Include="Service\Implementation\DatastoreService.cs" />
+    <Compile Include="Service\Contract\IPopulateService.cs" />
+    <Compile Include="Service\Contract\IQueryService.cs" />
+    <Compile Include="Service\Implementation\QueryService.cs" />
+    <Compile Include="Service\Implementation\PopulateService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
