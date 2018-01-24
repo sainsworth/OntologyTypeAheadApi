@@ -38,7 +38,6 @@ namespace OntologyTypeAheadApi.App_Start
 
             container.RegisterType<IQueryService, QueryService>();
             container.RegisterType<IPopulateService, PopulateService>();
-            container.RegisterType(typeof(LookupController));
 
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
         }

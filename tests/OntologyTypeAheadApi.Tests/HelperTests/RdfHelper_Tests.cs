@@ -11,7 +11,7 @@ using System.Linq;
 namespace OntologyTypeAheadApi.Tests.HelperTests
 {
     [TestClass]
-    public class RdfHelperTests
+    public class RdfHelper_Tests
     {
         public string testTtl = @"@prefix : <http://www.stew.test.uk/ontologytypeaheadapi/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .

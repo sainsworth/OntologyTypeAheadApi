@@ -12,6 +12,7 @@ using System.Text;
 using System.IO;
 using OntologyTypeAheadApi.Enums;
 using OntologyTypeAheadApi.Helpers;
+using OntologyTypeAheadApi.Models.Elastic;
 
 namespace OntologyTypeAheadApi.Context.Implementation
 {
@@ -154,33 +155,12 @@ namespace OntologyTypeAheadApi.Context.Implementation
             }
         }
 
-        private static StringBuilder getBulkJsonForItem(string accessor, string id, string label)
-        {
-            //{ "create":{ "_index":"accessors","_type":"accessors","_id":"a_towns"} }
-            //{ "doc" : { "Label":"Towns starting with A"} }
-            //{ "create":{ "_index":"a_towns","_type":"a_towns","_id":"http://www.stew.test.uk/dummy_ontology/Abingdon_to_Alston"} }
-            //{ "doc" : { "Label":"Abingdon to Alston"} }
-
-            var data1 = new { create = new { _index = accessor.ToLowerInvariant(), _type = accessor.ToLowerInvariant(), _id = id } };
-            var data2 = new { doc = new { Label = label } };
-
-            var json1 = JsonConvert.SerializeObject(data1, Formatting.None);
-            var json2 = JsonConvert.SerializeObject(data2, Formatting.None);
-
-            var ret = new StringBuilder(json1).Append(Environment.NewLine).Append(json2).Append(Environment.NewLine);
-
-            return ret;
-        }
-
         private async Task addItemsToLookupIndex(string accessor, Dictionary<string, string> items)
         {
             if (items != null && items.Count > 0)
             {
-                var datasb = getBulkJsonForItem(accessor, items.ToList()[0].Key, items.ToList()[0].Value);
-                items.ToList().Skip(1).ToList().ForEach(x => datasb.Append(getBulkJsonForItem(accessor, x.Key, x.Value)));
-
-                var xx = datasb.ToString();
-                var content = new StringContent(datasb.ToString(), Encoding.UTF8, "application/json");
+                var bulkJson = ElasticHelper.GetBulkJsonForItems(accessor, items);
+                var content = new StringContent(bulkJson, Encoding.UTF8, "application/json");
                 using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
                 {
                     client.BaseAddress = _elasticUrl;
@@ -209,18 +189,7 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 client.BaseAddress = _elasticUrl;
                 var r = await client.GetAsync($"{accessor}/_count");
 
-                dynamic resp = await HttpResponseHelper.ReadResponseContent(r.Content);
-
-                //Success equals:
-                //HTTP200
-                //{
-                //    "count": 42,
-                //    "_shards":  {
-                //        "total": 5,
-                //        "successful": 5,
-                //        "failed": 0
-                //    }
-                //}
+                var resp = await HttpResponseHelper.ReadResponseContent<ElasticCountResponse>(r.Content);
 
                 if (r.StatusCode != HttpStatusCode.OK)
                     throw new Exception($"Creating Elastic item count for _type = {accessor} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
@@ -239,44 +208,14 @@ namespace OntologyTypeAheadApi.Context.Implementation
                 var content = new StringContent(queryJson, Encoding.UTF8, "application/json");
                 var r = await client.PostAsync($"{accessor}/_search", content);
 
-                //Success equals:
-                //HTTP200
-                //{
-                //    "took":3,
-                //    "timed_out":false,
-                //    "_shards":{
-                //        "total":5,
-                //        "successful":5,
-                //        "skipped":0,
-                //        "failed":0
-                //    },
-                //    "hits":{
-                //        "total":1,
-                //        "max_score":1.0,
-                //        "hits":[
-                //            {
-                //                "_index":"accessors",
-                //                "_type":"accessors",
-                //                "_id":"a_towns",
-                //                "_score":1.0,
-                //                "_source":{
-                //                    "doc":{
-                //                        "Label":"Towns starting with A"
-                //                    }
-                //                }
-                //            }
-                //        ]
-                //    }
-                //}
-
                 if (r.StatusCode != HttpStatusCode.OK)
                     throw new Exception($"Querying Elastic on {accessor}/_count with {queryJson} did not return OK - {r.StatusCode.ToString()} - {r.Content.ToString()}");
 
-                dynamic resp = await HttpResponseHelper.ReadResponseContent(r.Content);
+                var resp = await HttpResponseHelper.ReadResponseContent<ElasticSearchResponse<ElasticLookupItem>>(r.Content);
                 List<LookupItem> ret = new List<LookupItem>();
                 if (resp.hits != null)
                 {
-                    ((IEnumerable<dynamic>)resp.hits.hits).ToList().ForEach(x =>
+                    resp.hits.hits.ToList().ForEach(x =>
                     {
                         ret.Add(new LookupItem(x._id.ToString(), x._source.doc.Label.ToString()));
                     });

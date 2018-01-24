@@ -47,6 +47,10 @@
       <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Shouldly, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Shouldly.3.0.0\lib\net451\Shouldly.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -100,16 +104,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContextTests\DatastoreContextTests.cs" />
+    <Compile Include="ContextTests\Elastic_DatastoreContext_Tests.cs" />
+    <Compile Include="ContextTests\Mock_DatastoreContext_Tests.cs" />
+    <Compile Include="HelperTests\ElasticHelper_Tests.cs" />
     <Compile Include="Helper\AssertHelper.cs" />
-    <Compile Include="HelperTests\HttpResponseHelperTests.cs" />
-    <Compile Include="HelperTests\RdfHelperTests.cs" />
+    <Compile Include="HelperTests\HttpResponseHelper_Tests.cs" />
+    <Compile Include="HelperTests\RdfHelper_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ControllerTests\ValuesControllerTests.cs" />
-    <Compile Include="ServiceTests\DatastoreServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
+    <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetBulkJsonForItem.approved.txt" />
+    <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetBulkJsonForItems.approved.txt" />
+    <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_All.approved.txt" />
+    <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_Contains.approved.txt" />
+    <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_Exact.approved.txt" />
+    <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_Exact.received.txt" />
+    <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_StartsWith.approved.txt" />
+    <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_StartsWith.received.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -119,6 +132,9 @@
       <Project>{07a5399a-29cb-4feb-a6aa-1df3c4ed9222}</Project>
       <Name>OntologyTypeAheadApi</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ServiceTests\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

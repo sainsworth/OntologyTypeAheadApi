@@ -1,0 +1,4 @@
+{"create":{"_index":"accessor","_type":"accessor","_id":"One"}}
+{"doc":{"Label":"Item One"}}
+{"create":{"_index":"accessor","_type":"accessor","_id":"Two"}}
+{"doc":{"Label":"Item two"}}

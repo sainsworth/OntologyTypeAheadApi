@@ -215,6 +215,15 @@
     <Compile Include="Helpers\RdfHelper.cs" />
     <Compile Include="Models\Contract\IRequest.cs" />
     <Compile Include="Models\Contract\IResponse.cs" />
+    <Compile Include="Models\Elastic\ElasticCountResponse.cs" />
+    <Compile Include="Models\Elastic\ElasticDocumentCreate.cs" />
+    <Compile Include="Models\Elastic\ElasticDocumentHeader.cs" />
+    <Compile Include="Models\Elastic\ElasticHitItem.cs" />
+    <Compile Include="Models\Elastic\ElasticHits.cs" />
+    <Compile Include="Models\Elastic\ElasticLookupItem.cs" />
+    <Compile Include="Models\Elastic\ElasticSearchResponse.cs" />
+    <Compile Include="Models\Elastic\ElasticShard.cs" />
+    <Compile Include="Models\Elastic\ElasticSource.cs" />
     <Compile Include="Models\Request\ConformedRequest.cs" />
     <Compile Include="Models\Request\ElasticQuery.cs" />
     <Compile Include="Models\Response\DataResponse\LoadOntologyResponse.cs" />

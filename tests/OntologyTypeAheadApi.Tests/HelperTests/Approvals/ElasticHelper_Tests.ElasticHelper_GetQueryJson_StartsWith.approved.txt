@@ -1,0 +1,1 @@
+{"query":{"bool":{"must":[{"query_string":{"query":"StartsWith*"}}]}},"from":10,"size":10}

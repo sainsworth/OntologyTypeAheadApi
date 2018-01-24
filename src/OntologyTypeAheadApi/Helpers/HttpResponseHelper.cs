@@ -37,13 +37,13 @@ namespace OntologyTypeAheadApi.Helpers
             }
         }
 
-        public static async Task<dynamic> ReadResponseContent(HttpContent content)
+        public static async Task<T> ReadResponseContent<T>(HttpContent content)
         {
             Stream stream = await content.ReadAsStreamAsync();
             StreamReader readStream = new StreamReader(stream, Encoding.UTF8);
             string text = readStream.ReadToEnd();
 
-            return JsonConvert.DeserializeObject(text);
+            return JsonConvert.DeserializeObject<T>(text);
         }
     }
 }
