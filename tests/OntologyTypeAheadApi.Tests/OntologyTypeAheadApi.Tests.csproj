@@ -120,9 +120,7 @@
     <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_All.approved.txt" />
     <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_Contains.approved.txt" />
     <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_Exact.approved.txt" />
-    <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_Exact.received.txt" />
     <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_StartsWith.approved.txt" />
-    <Content Include="HelperTests\Approvals\ElasticHelper_Tests.ElasticHelper_GetQueryJson_StartsWith.received.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
